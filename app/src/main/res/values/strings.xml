@@ -4,6 +4,34 @@
     <string name="username_label">Username</string>
     <string name="password_label">Password</string>
     <string name="forgot_password"><u>Forgot Password</u></string>
+    <string name="register">Register</string>
+    <string name="name_label">Name *</string>
+    <string name="error_name">Invalid name, Please re-enter.</string>
+    <string name="dob_label">Date Of Birth *</string>
+    <string name="error_dob">Please select date of birth</string>
+    <string name="phone_number_label">Phone Number *</string>
+    <string name="error_phone">Invalid phone number, Please re-enter.</string>
+    <string name="email_label">Email Address *</string>
+    <string name="error_email">Invalid email address, Please re-enter.</string>
+    <string name="country_label">Country *</string>
+    <string name="error_country">Please select date of birth.</string>
+    <string name="error_password">Invalid password, Please re-enter. Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one special character, and one number.</string>
+    <string name="confirm_password_label">Confirm Password *</string>
+    <string name="error_confirm_password">Mismatch password, Please re-enter.</string>
+    <string name="accept_terms">
+        I accept the <a href="terms">Terms and Conditions</a> and <a href="privacy">Privacy Policy</a>
+    </string>
+    <string name="error_message_placeholder">Something went wrongs</string>
+    <string name="terms_and_conditions_title">Term and Conditions</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="congratulations">
+        Congratulations!
+    </string>
+    <string name="success_registration_message">
+        You have successfully registered with PlanPerfect. You can now proceed to login and start planning your perfect itinerary.
+    </string>
+    <string name="back_button">Back</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="register_now_label">Don’t have an account? <u>Sign Up now!</u></string>

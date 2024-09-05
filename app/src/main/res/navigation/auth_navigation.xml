@@ -20,4 +20,14 @@
         android:name="com.example.planperfect.view.authentication.ResetPasswordFragment"
         android:label="fragment_reset_password"
         tools:layout="@layout/fragment_register" />
+    <fragment
+        android:id="@+id/termsAndConditionsFragment"
+        android:name="com.example.planperfect.view.authentication.TermsAndConditionsFragment"
+        android:label="fragment_terms_and_conditions"
+        tools:layout="@layout/fragment_terms_and_conditions" />
+    <fragment
+        android:id="@+id/privacyPolicyFragment"
+        android:name="com.example.planperfect.view.authentication.PrivacyPolicyFragment"
+        android:label="fragment_privacy_policy"
+        tools:layout="@layout/fragment_privacy_policy" />
 </navigation>
