@@ -302,6 +302,8 @@ class RegisterFragment : Fragment() {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_registration_success)
 
+        dialog.window?.setBackgroundDrawableResource(R.drawable.bg_rounded_dialog)
+
         // Set up dialog components
         val btnBack = dialog.findViewById<Button>(R.id.btnBack)
         val btnLogin = dialog.findViewById<Button>(R.id.btnLogin)

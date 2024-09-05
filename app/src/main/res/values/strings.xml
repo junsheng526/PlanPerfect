@@ -30,7 +30,12 @@
     <string name="success_registration_message">
         You have successfully registered with PlanPerfect. You can now proceed to login and start planning your perfect itinerary.
     </string>
+    <string name="success_verification_message">
+        A verification code has been sent to your registered email.
+    </string>
     <string name="back_button">Back</string>
+    <string name="reset_password">Forgot Password</string>
+    <string name="confirm">Confirm</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

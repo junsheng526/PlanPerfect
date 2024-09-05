@@ -39,6 +39,10 @@ class LoginFragment : Fragment() {
             nav.navigate(R.id.registerFragment)
         }
 
+        binding.tvForgotPassword.setOnClickListener {
+            nav.navigate(R.id.resetPasswordFragment)
+        }
+
         binding.loginBtn.setOnClickListener {
             val email = binding.editTextEmail.text.toString()
             val pwd = binding.editTextPassword.text.toString()
