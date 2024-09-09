@@ -6,6 +6,8 @@
     <color name="start_color_gradient">#71C5DF</color>
     <color name="error_color">#FB0000</color>
     <color name="gray_text_color">#595959</color>
+    <color name="status_success">#D3F7DB</color>
+    <color name="status_in_progress">#DBD3F7</color>
 
 
 

@@ -1,5 +1,6 @@
 package com.example.planperfect.utils
 
+import com.example.planperfect.data.model.Itinerary
 import com.example.planperfect.data.model.TouristPlace
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -57,6 +58,71 @@ class DummyDataUtil {
             println("Dummy tourist places added successfully.")
         } catch (e: Exception) {
             println("Error adding dummy places: ${e.message}")
+        }
+    }
+
+    suspend fun createDummyItineraries() {
+        val firestore = FirebaseFirestore.getInstance()
+        val itineraryCollection = firestore.collection("itinerary")
+
+        // Define a list of dummy itineraries
+        val dummyItineraries = listOf(
+            Itinerary(
+                id = UUID.randomUUID().toString(),
+                name = "Paris Adventure",
+                startDate = "2024-07-01",
+                endDate = "2024-07-10",
+                homeCity = "New York",
+                countryToVisit = "France",
+                imageUrl = "https://example.com/sydney_opera_house.jpg",
+            ),
+            Itinerary(
+                id = UUID.randomUUID().toString(),
+                name = "Tokyo Excursion",
+                startDate = "2024-09-15",
+                endDate = "2024-09-25",
+                homeCity = "Los Angeles",
+                countryToVisit = "Japan",
+                imageUrl = "https://example.com/sydney_opera_house.jpg",
+            ),
+            Itinerary(
+                id = UUID.randomUUID().toString(),
+                name = "Sydney Explorer",
+                startDate = "2024-11-05",
+                endDate = "2024-11-15",
+                homeCity = "London",
+                countryToVisit = "Australia",
+                imageUrl = "https://example.com/sydney_opera_house.jpg",
+            ),
+            Itinerary(
+                id = UUID.randomUUID().toString(),
+                name = "Rome Getaway",
+                startDate = "2024-05-20",
+                endDate = "2024-05-30",
+                homeCity = "Toronto",
+                countryToVisit = "Italy",
+                imageUrl = "https://example.com/sydney_opera_house.jpg",
+            ),
+            Itinerary(
+                id = UUID.randomUUID().toString(),
+                name = "Beijing Historical Tour",
+                startDate = "2024-06-01",
+                endDate = "2024-06-10",
+                homeCity = "Vancouver",
+                countryToVisit = "China",
+                imageUrl = "https://example.com/sydney_opera_house.jpg",
+            )
+        )
+
+        // Insert dummy itineraries into Firestore
+        try {
+            for (itinerary in dummyItineraries) {
+                itineraryCollection.document(itinerary.id).set(itinerary).await()
+                println("Added: ${itinerary.name}")
+            }
+            println("Dummy itineraries added successfully.")
+        } catch (e: Exception) {
+            println("Error adding dummy itineraries: ${e.message}")
         }
     }
 }

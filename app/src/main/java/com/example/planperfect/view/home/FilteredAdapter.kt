@@ -14,11 +14,9 @@ class FilteredAdapter(private val items: List<TouristPlace>) :
     inner class ViewHolder(private val binding: ItemFilteredBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TouristPlace) {
-            // Use Glide to load the image from the URL into the ImageView
             Glide.with(binding.itemImage.context)
                 .load(item.imageUrl)  // item.image is the URL
                 .placeholder(R.drawable.tourist_image_1)
-//                .error(R.drawable.error_image)
                 .into(binding.itemImage)
 
             // Set other text fields
