@@ -8,7 +8,7 @@ import retrofit2.Response
 
 class CountryRepository {
 
-    private val apiService = RetrofitInstance.api
+    private val apiService = RetrofitInstance.countryApi
 
     fun getAllCountries(
         onSuccess: (List<String>) -> Unit,

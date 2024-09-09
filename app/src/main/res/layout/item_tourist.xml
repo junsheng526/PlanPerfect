@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="8dp"
+    android:layout_gravity="center">
+
+    <!-- Image with rounded corners -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/touristImage"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Tourist Image"
+        app:shapeAppearanceOverlay="@style/RoundedImageView" />
+
+    <!-- Text inside the bottom of the image -->
+    <TextView
+        android:id="@+id/touristTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/transparent"
+        android:text="Tourist Location"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:gravity="start" />
+
+</FrameLayout>

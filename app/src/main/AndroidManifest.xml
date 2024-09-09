@@ -13,19 +13,13 @@
         android:theme="@style/Theme.PlanPerfect"
         tools:targetApi="31">
         <activity
-            android:name=".view.authentication.PrivacyPolicyActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.authentication.TermsAndConditionsActivity"
-            android:exported="false" />
-        <activity
             android:name=".view.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".view.LandingActivity"
+            android:name=".view.authentication.AuthenticationActivity"
             android:exported="false" />
         <activity
-            android:name=".view.authentication.AuthenticationActivity"
+            android:name=".view.LandingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
