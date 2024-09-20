@@ -12,14 +12,16 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.data.model.Itinerary
+import com.example.planperfect.data.model.Trip
 import com.example.planperfect.databinding.FragmentPlanningBinding
 import com.example.planperfect.viewmodel.PlanningViewModel
+import com.example.planperfect.viewmodel.TripViewModel
 
 class PlanningFragment : Fragment() {
     private lateinit var binding: FragmentPlanningBinding
     private lateinit var itineraryAdapter: ItineraryAdapter
-    private val itineraryList = mutableListOf<Itinerary>()
-    private lateinit var planningViewModel: PlanningViewModel
+    private val itineraryList = mutableListOf<Trip>()
+    private lateinit var tripViewModel: TripViewModel
     private var searchQuery: String = "" // Track the current search query
 
     @SuppressLint("NotifyDataSetChanged")
@@ -29,27 +31,23 @@ class PlanningFragment : Fragment() {
     ): View? {
         binding = FragmentPlanningBinding.inflate(inflater, container, false)
 
-//        CoroutineScope(Dispatchers.IO).launch {
-//            DummyDataUtil().createDummyItineraries()
-//        }
-
         // Set up RecyclerView with ItineraryAdapter (Vertical List)
         itineraryAdapter = ItineraryAdapter(itineraryList)
         binding.itineraryRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.itineraryRecyclerView.adapter = itineraryAdapter
 
         // Initialize PlanningViewModel
-        planningViewModel = ViewModelProvider(this).get(PlanningViewModel::class.java)
+        tripViewModel = ViewModelProvider(this).get(TripViewModel::class.java)
 
         // Observe the itineraryLiveData and update UI when data changes
-        planningViewModel.itineraryLiveData.observe(viewLifecycleOwner) { itineraries ->
+        tripViewModel.trips.observe(viewLifecycleOwner) { trips ->
             // Only update the list if there's an active search query
             if (searchQuery.isNotEmpty()) {
                 filterList(searchQuery)
             } else {
                 // Show all itineraries initially
                 itineraryList.clear()
-                itineraryList.addAll(itineraries)
+                itineraryList.addAll(trips)
                 itineraryAdapter.notifyDataSetChanged()
             }
         }
@@ -61,7 +59,7 @@ class PlanningFragment : Fragment() {
                 if (searchQuery.isEmpty()) {
                     // Show all itineraries initially
                     itineraryList.clear()
-                    itineraryList.addAll(planningViewModel.itineraryLiveData.value ?: emptyList())
+                    itineraryList.addAll(tripViewModel.trips.value ?: emptyList())
                     itineraryAdapter.notifyDataSetChanged()
                 } else {
                     // Filter itineraries
@@ -89,10 +87,10 @@ class PlanningFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     private fun filterList(query: String) {
         // Filter itineraries based on query
-        val filteredItems = planningViewModel.itineraryLiveData.value?.filter { place ->
+        val filteredItems = tripViewModel.trips.value?.filter { place ->
             place.name.contains(query, ignoreCase = true) ||
                     place.homeCity.contains(query, ignoreCase = true) ||
-                    place.countryToVisit.contains(query, ignoreCase = true)
+                    place.destination.contains(query, ignoreCase = true)
         } ?: listOf()
 
         // Update filtered list and notify adapter

@@ -49,6 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -96,6 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -144,6 +146,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -191,6 +194,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -259,6 +263,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state"
                 app:passwordToggleEnabled="true">
 
@@ -307,6 +312,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state"
                 app:passwordToggleEnabled="true">
 

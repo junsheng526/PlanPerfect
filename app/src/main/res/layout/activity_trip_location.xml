@@ -7,7 +7,7 @@
     android:background="@drawable/bg_primary_gradient"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".view.planning.TripInformationActivity">
+    tools:context=".view.planning.TripLocationActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -28,7 +28,7 @@
             android:layout_gravity="center"
             android:textColor="@color/gray_text_color"
             android:textSize="24sp"
-            android:text="Trip Information"
+            android:text="Trip Location"
             android:textStyle="bold"/>
 
     </androidx.appcompat.widget.Toolbar>
@@ -52,7 +52,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trip Name"
+                android:text="Home city"
                 android:textColor="@color/secondary" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -63,19 +63,17 @@
                 app:boxStrokeColor="@drawable/text_input_color_state">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextTripName"
+                    android:id="@+id/editHomeCity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Travel Start Date Input -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Start Date"
+                android:text="Country/Regions to visit"
                 android:textColor="@color/secondary" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -86,37 +84,14 @@
                 app:boxStrokeColor="@drawable/text_input_color_state">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextStartDate"
+                    android:id="@+id/editCountryToVisit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
-                    android:focusable="false"
-                    android:inputType="date"/>
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Travel End Date Input -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="End Date"
-                android:textColor="@color/secondary" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                app:boxBackgroundMode="filled"
-                app:boxStrokeColor="@drawable/text_input_color_state">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editTextEndDate"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:focusable="false"
-                    android:inputType="date" />
-            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Next Button -->
             <androidx.appcompat.widget.AppCompatButton
@@ -126,7 +101,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/custom_button_001"
-                android:text="Next"
+                android:text="Done"
                 android:textColor="@android:color/black" />
 
         </LinearLayout>

@@ -54,6 +54,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state"
                 android:backgroundTint="@color/white">
 
@@ -78,6 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
+                app:boxBackgroundMode="filled"
                 app:boxStrokeColor="@drawable/text_input_color_state"
                 app:passwordToggleEnabled="true">
 

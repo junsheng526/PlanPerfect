@@ -9,6 +9,10 @@
     <color name="status_success">#D3F7DB</color>
     <color name="status_in_progress">#DBD3F7</color>
 
+    <color name="pending_color">#95B6E3</color> <!-- Example: Orange -->
+    <color name="completed_color">#D3F7DB</color> <!-- Example: Red -->
+    <color name="ongoing_color">#DBD3F7</color> <!-- Example: Green -->
+
 
 
     <color name="btn_bg_color">#DEE7F3</color>
