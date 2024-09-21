@@ -2,6 +2,7 @@ package com.example.planperfect.view.planning
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -18,6 +19,7 @@ import com.example.planperfect.viewmodel.TripViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -68,8 +70,10 @@ class TripLocationActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     val success: Boolean = tripViewModel.set(trip)
                     if (success) {
+                        // Initialize the itinerary sub-collection
+                        initializeItinerary(trip.id)
+
                         Toast.makeText(this@TripLocationActivity, "Trip created successfully!", Toast.LENGTH_SHORT).show()
-                        // Navigate or perform any additional action
                         val intent = Intent(this@TripLocationActivity, TripDetailsActivity::class.java)
                         intent.putExtra("tripId", trip.id)
                         startActivity(intent)
@@ -82,6 +86,32 @@ class TripLocationActivity : AppCompatActivity() {
                 // Handle the case where the user is not logged in
                 Toast.makeText(this, "You are not logged in!", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private suspend fun initializeItinerary(tripId: String) {
+        val itineraryCollection = Firebase.firestore.collection("trip")
+            .document(tripId)
+            .collection("itineraries")
+
+        // You can add a document for each day of the trip, for example 7 days.
+        val defaultItineraries = (1..7).map { day ->
+            hashMapOf(
+                "dayId" to "$tripId-Day-$day",  // Custom day ID format
+                "places" to mutableListOf<String>() // Start with an empty list for places
+            )
+        }
+
+        // Add each day's itinerary to Firestore with custom dayId
+        for ((index, itinerary) in defaultItineraries.withIndex()) {
+            val customDayId = "$tripId-Day-${index + 1}"  // Custom document ID
+            itineraryCollection.document(customDayId).set(itinerary)
+                .addOnSuccessListener {
+                    Log.d("INITIALIZE_ITINERARY", "Successfully added day $customDayId")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("INITIALIZE_ITINERARY", "Error adding day $customDayId: ${e.message}")
+                }
         }
     }
 

@@ -1,35 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- ScrollView for the content -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <!-- Horizontal scrollable container for Day Buttons -->
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- LinearLayout to hold buttons in a row -->
-            <LinearLayout
-                android:id="@+id/dayButtonContainer"
-                android:layout_width="wrap_content"
+            <!-- Horizontal scrollable container for Day Buttons -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" />
-        </HorizontalScrollView>
+                android:padding="8dp">
 
-        <!-- TextView to display content for the selected day -->
-        <TextView
-            android:id="@+id/dayContentTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:textSize="16sp"
-            android:text="Select a day to view details" />
-    </LinearLayout>
-</ScrollView>
+                <!-- LinearLayout to hold buttons in a row -->
+                <LinearLayout
+                    android:id="@+id/dayButtonContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
+            <!-- TextView to display content for the selected day -->
+            <TextView
+                android:id="@+id/dayContentTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:text="Select a day to view details" />
+
+            <!-- RecyclerView for displaying places -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/placesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:scrollbars="vertical" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- FloatingActionButton outside the ScrollView to float above it -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_itinerary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        android:tint="@color/black" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

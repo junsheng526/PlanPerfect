@@ -13,8 +13,10 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.content.ContextCompat
 
-class ItineraryAdapter(private val itineraryList: List<Trip>) :
-    RecyclerView.Adapter<ItineraryAdapter.ItineraryViewHolder>() {
+class ItineraryAdapter(
+    private val itineraryList: List<Trip>,
+    private val onTripClick: (Trip) -> Unit // Pass a click listener
+) : RecyclerView.Adapter<ItineraryAdapter.ItineraryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItineraryViewHolder {
         val binding = ItineraryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,8 +24,8 @@ class ItineraryAdapter(private val itineraryList: List<Trip>) :
     }
 
     override fun onBindViewHolder(holder: ItineraryViewHolder, position: Int) {
-        val place = itineraryList[position]
-        holder.bind(place)
+        val trip = itineraryList[position]
+        holder.bind(trip)
     }
 
     override fun getItemCount(): Int = itineraryList.size
@@ -43,21 +45,18 @@ class ItineraryAdapter(private val itineraryList: List<Trip>) :
             val startDate = parseDate(trip.startDate)
             val endDate = parseDate(trip.endDate)
 
-            // Check if the dates are valid and set the status accordingly
+            // Set status based on date
             if (startDate != null && endDate != null) {
                 when {
                     currentDate.before(startDate) -> {
-                        // Trip is in the future
                         binding.statusButton.text = "Pending"
                         binding.statusButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.pending_color)
                     }
                     currentDate.after(endDate) -> {
-                        // Trip has ended
                         binding.statusButton.text = "Completed"
                         binding.statusButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.completed_color)
                     }
                     currentDate in startDate..endDate -> {
-                        // Trip is ongoing
                         binding.statusButton.text = "On Going"
                         binding.statusButton.backgroundTintList = ContextCompat.getColorStateList(itemView.context, R.color.ongoing_color)
                     }
@@ -66,11 +65,12 @@ class ItineraryAdapter(private val itineraryList: List<Trip>) :
                 binding.statusButton.text = "Unknown Status"
             }
 
-            // Handle status button click if needed
-            binding.statusButton.setOnClickListener {
-                // Implement status button click logic
+            // Handle item click to navigate to TripDetailsActivity
+            itemView.setOnClickListener {
+                onTripClick(trip) // Trigger the callback when an item is clicked
             }
         }
+
         private fun parseDate(dateString: String): Date? {
             return try {
                 val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())

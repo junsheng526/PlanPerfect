@@ -1,18 +1,24 @@
 package com.example.planperfect.view.planning
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.planperfect.R
+import com.example.planperfect.data.model.TouristPlace
+import com.example.planperfect.databinding.FragmentTripDetailsBinding
 import com.example.planperfect.viewmodel.TripViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,6 +26,10 @@ import java.util.*
 class TripDetailsFragment : Fragment() {
 
     private val tripViewModel: TripViewModel by viewModels()
+    private lateinit var binding: FragmentTripDetailsBinding
+    private var selectedDayId: String? = null  // Track the selected dayId
+    private lateinit var placesAdapter: PlacesAdapter // RecyclerView adapter to display places
+    private var tripId = ""
 
     companion object {
         private const val ARG_TRIP_ID = "tripId"
@@ -37,11 +47,19 @@ class TripDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_trip_details, container, false)
-        val dayButtonContainer = rootView.findViewById<LinearLayout>(R.id.dayButtonContainer)
-        val dayContentTextView = rootView.findViewById<TextView>(R.id.dayContentTextView)
+        binding = FragmentTripDetailsBinding.inflate(inflater, container, false)
+        tripId = arguments?.getString(ARG_TRIP_ID) ?: return binding.root
 
-        val tripId = arguments?.getString(ARG_TRIP_ID) ?: return rootView
+        // Initialize the RecyclerView to display the places
+        placesAdapter = PlacesAdapter(mutableListOf())
+        binding.placesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.placesRecyclerView.adapter = placesAdapter
+
+//        lifecycleScope.launch {
+//            val places = tripViewModel.getPlacesForDay(tripId, selectedDayId ?: "")
+//            // Update the UI with the list of places
+//            placesAdapter.updatePlaces(places)
+//        }
 
         // Fetch trip details from ViewModel in a coroutine
         lifecycleScope.launch {
@@ -59,14 +77,18 @@ class TripDetailsFragment : Fragment() {
                         val button = Button(requireContext()).apply {
                             text = "Day $i"
                             setOnClickListener {
-                                // Display content for this day
-                                displayDayContent(i, dayContentTextView)
+                                // Generate dayId for the selected day
+                                selectedDayId = "$tripId-Day-$i"
+                                Log.d("SELECTED ID::" , selectedDayId!!)
+
+                                // Display places for this day
+                                displayDayContent(i, binding.dayContentTextView)
                             }
                         }
                         if (i == 1) {
                             firstButton = button // Capture the first button for Day 1
                         }
-                        dayButtonContainer.addView(button)
+                        binding.dayButtonContainer.addView(button)
                     }
 
                     // Show content for Day 1 by default
@@ -81,7 +103,19 @@ class TripDetailsFragment : Fragment() {
             }
         }
 
-        return rootView
+        // Handle FAB click to add itinerary
+        binding.fabAddItinerary.setOnClickListener {
+            if (selectedDayId != null) {
+                val intent = Intent(context, AddDestinationActivity::class.java)
+                intent.putExtra("tripId", tripId)
+                intent.putExtra("dayId", selectedDayId)  // Pass the selected dayId
+                startActivity(intent)
+            } else {
+                Toast.makeText(context, "Please select a day first", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        return binding.root
     }
 
     private fun parseDate(dateString: String): Date? {
@@ -99,7 +133,28 @@ class TripDetailsFragment : Fragment() {
     }
 
     private fun displayDayContent(day: Int, textView: TextView) {
-        // Display content for the selected day
-        textView.text = "Content for Day $day"  // Here you can update this with actual day-specific data
+        val dayId = selectedDayId ?: return
+        val itineraryCollection = FirebaseFirestore.getInstance()
+            .collection("trip")
+            .document(tripId)
+            .collection("itineraries")
+
+        itineraryCollection.document(dayId).get().addOnSuccessListener { documentSnapshot ->
+            val placesList = documentSnapshot.get("places") as? List<HashMap<String, Any>> ?: emptyList()
+            val touristPlaces = placesList.map { placeMap ->
+                TouristPlace(
+                    name = placeMap["name"] as String,
+                    category = placeMap["category"] as String,
+                    startTime = placeMap["startTime"] as? String,
+                    endTime = placeMap["endTime"] as? String,
+                    notes = placeMap["notes"] as? String
+                )
+            }.sortedWith(compareBy<TouristPlace> { it.startTime }.thenBy { it.endTime })
+
+            // Update the RecyclerView adapter with the sorted places
+            placesAdapter.updatePlaces(touristPlaces)
+        }.addOnFailureListener {
+            Toast.makeText(context, "Failed to fetch itinerary for Day $day", Toast.LENGTH_SHORT).show()
+        }
     }
 }

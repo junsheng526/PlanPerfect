@@ -13,6 +13,12 @@
         android:theme="@style/Theme.PlanPerfect"
         tools:targetApi="31">
         <activity
+            android:name=".view.planning.AddNewPlacesDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.planning.AddDestinationActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.planning.TripDetailsActivity"
             android:exported="false" />
         <activity

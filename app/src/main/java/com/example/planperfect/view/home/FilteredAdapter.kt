@@ -8,22 +8,28 @@ import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.ItemFilteredBinding
 
-class FilteredAdapter(private val items: List<TouristPlace>) :
-    RecyclerView.Adapter<FilteredAdapter.ViewHolder>() {
+class FilteredAdapter(
+    private val items: List<TouristPlace>,
+    private val onItemClicked: ((TouristPlace) -> Unit)? = null
+) : RecyclerView.Adapter<FilteredAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: ItemFilteredBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TouristPlace) {
             Glide.with(binding.itemImage.context)
-                .load(item.imageUrl)  // item.image is the URL
+                .load(item.imageUrl)
                 .placeholder(R.drawable.tourist_image_1)
                 .into(binding.itemImage)
 
             // Set other text fields
             binding.itemTitle.text = item.name
             binding.itemDescription.text = item.description
-            // Add bullet point before the tag
             binding.itemTag.text = "\u2022 ${item.category}"
+
+            // Handle item click, if listener is provided
+            binding.root.setOnClickListener {
+                onItemClicked?.invoke(item)
+            }
         }
     }
 

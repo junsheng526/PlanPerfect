@@ -31,8 +31,13 @@ class PlanningFragment : Fragment() {
     ): View? {
         binding = FragmentPlanningBinding.inflate(inflater, container, false)
 
-        // Set up RecyclerView with ItineraryAdapter (Vertical List)
-        itineraryAdapter = ItineraryAdapter(itineraryList)
+        itineraryAdapter = ItineraryAdapter(itineraryList) { trip ->
+            // Handle trip item click and navigate to TripDetailsActivity
+            val intent = Intent(activity, TripDetailsActivity::class.java)
+            intent.putExtra("tripId", trip.id) // Pass the trip ID
+            startActivity(intent)
+        }
+
         binding.itineraryRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.itineraryRecyclerView.adapter = itineraryAdapter
 
