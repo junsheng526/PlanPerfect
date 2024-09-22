@@ -13,7 +13,9 @@ data class TouristPlace(
     val category: String = "",
     var startTime: String? = "",
     var endTime: String? = "",
-    var notes: String? = null
+    var notes: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null
 ) : Parcelable {
 
     // Parcelable implementation
@@ -25,7 +27,9 @@ data class TouristPlace(
         category = parcel.readString() ?: "",
         startTime = parcel.readString(),
         endTime = parcel.readString(),
-        notes = parcel.readString()
+        notes = parcel.readString(),
+        latitude = parcel.readValue(Double::class.java.classLoader) as? Double, // Correctly read as Double
+        longitude = parcel.readValue(Double::class.java.classLoader) as? Double  // Correctly read as Double
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -37,6 +41,8 @@ data class TouristPlace(
         parcel.writeString(startTime)
         parcel.writeString(endTime)
         parcel.writeString(notes)
+        parcel.writeValue(latitude)  // Write latitude
+        parcel.writeValue(longitude) // Write longitude
     }
 
     override fun describeContents(): Int {
@@ -56,13 +62,17 @@ data class TouristPlace(
     fun toMap(): Map<String, Any?> {
         return mapOf(
             "name" to name,
+            "description" to description,
+            "imageUrl" to imageUrl,
             "category" to category,
             "startTime" to startTime,
             "endTime" to endTime,
-            "notes" to notes
+            "notes" to notes,
+            "latitude" to latitude,   // Include latitude
+            "longitude" to longitude   // Include longitude
         )
     }
 
     // No-argument constructor for Firebase
-    constructor() : this("", "", "", "", "")
+    constructor() : this("", "", "", "", "", null, null, null, null, null)
 }

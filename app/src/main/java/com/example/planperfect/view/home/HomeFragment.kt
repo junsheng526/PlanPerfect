@@ -9,12 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.R
 import com.example.planperfect.data.model.Tourist
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.FragmentHomeBinding
+import com.example.planperfect.utils.DummyDataUtil
 import com.example.planperfect.viewmodel.PlacesViewModel
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -38,6 +41,10 @@ class HomeFragment : Fragment() {
             Tourist(R.drawable.tourist_image_3, "Rome,\nItaly"),
             Tourist(R.drawable.tourist_image_4, "Yokohama,\nJapan")
         )
+
+//        lifecycleScope.launch {
+//            DummyDataUtil.createDummyMalaysiaTouristPlaces()
+//        }
 
         // Set up RecyclerView with TouristAdapter (Horizontal Carousel)
         touristAdapter = TouristAdapter(touristList)

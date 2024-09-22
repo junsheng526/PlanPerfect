@@ -5,46 +5,60 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.example.planperfect.R
 import com.example.planperfect.data.model.Trip
+import com.example.planperfect.databinding.ActivityAuthenticationBinding
+import com.example.planperfect.databinding.ActivityTripDetailsBinding
+import com.example.planperfect.databinding.FragmentHomeBinding
 import com.example.planperfect.viewmodel.TripViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.launch
 
 class TripDetailsActivity : AppCompatActivity() {
 
-    private lateinit var viewPager: ViewPager2
-    private lateinit var tabLayout: TabLayout
+    private lateinit var binding: ActivityTripDetailsBinding
     private val tripViewModel: TripViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trip_details)
+        binding = ActivityTripDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Setup toolbar
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener {
-            onBackPressed()
-        }
+        setupToolbar()
 
         // Retrieve tripId from Intent
         val tripId = intent.getStringExtra("tripId") ?: return
 
-        viewPager = findViewById(R.id.viewPager)
-        tabLayout = findViewById(R.id.tabLayout)
+        lifecycleScope.launch {
+            val trip = tripViewModel.get(tripId)
+            if (trip != null) {
+                binding.toolbarTitle.text = trip.name
+            }
+        }
 
         // Setup ViewPager and TabLayout
         val adapter = TripDetailsPagerAdapter(this, tripId)
-        viewPager.adapter = adapter
+        binding.viewPager.adapter = adapter
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> "Trip Details"
                 1 -> "Collaborators"
                 else -> null
             }
         }.attach()
+    }
+
+    private fun setupToolbar() {
+        val toolbar: Toolbar = binding.toolbar
+        setSupportActionBar(toolbar)
+        toolbar.setNavigationOnClickListener {
+            this.onBackPressed()
+        }
+
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 }

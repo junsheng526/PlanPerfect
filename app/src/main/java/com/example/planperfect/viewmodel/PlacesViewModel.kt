@@ -55,10 +55,4 @@ class PlacesViewModel : ViewModel() {
             }
         }
     }
-
-    fun generateDummyData() {
-        viewModelScope.launch {
-            DummyDataUtil().createDummyTouristPlaces()
-        }
-    }
 }

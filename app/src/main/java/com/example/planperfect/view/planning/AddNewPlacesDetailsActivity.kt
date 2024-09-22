@@ -1,5 +1,6 @@
 package com.example.planperfect.view.planning
 
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -11,6 +12,9 @@ import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.ActivityAddNewPlacesDetailsBinding
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class AddNewPlacesDetailsActivity : AppCompatActivity() {
 
@@ -18,6 +22,9 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
     private lateinit var selectedPlace: TouristPlace
     private lateinit var tripId: String
     private lateinit var dayId: String
+
+    private var startTimeCalendar: Calendar? = null
+    private var endTimeCalendar: Calendar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +39,39 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
         // Set up UI with selected place details...
 
         binding.buttonSave.setOnClickListener {
-            addPlaceToTrip(selectedPlace)
+            if (validateTimes()) {
+                addPlaceToTrip(selectedPlace)
+            }
         }
+
+        binding.editTextStartTime.setOnClickListener {
+            showTimePicker { selectedTime, calendar ->
+                binding.editTextStartTime.text = selectedTime
+                startTimeCalendar = calendar
+            }
+        }
+
+        binding.editTextEndTime.setOnClickListener {
+            showTimePicker { selectedTime, calendar ->
+                binding.editTextEndTime.text = selectedTime
+                endTimeCalendar = calendar
+            }
+        }
+    }
+
+    private fun showTimePicker(onTimeSelected: (String, Calendar) -> Unit) {
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+
+        val timePickerDialog = TimePickerDialog(this, { _, selectedHour, selectedMinute ->
+            calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
+            calendar.set(Calendar.MINUTE, selectedMinute)
+            val formattedTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(calendar.time)
+            onTimeSelected(formattedTime, calendar)
+        }, hour, minute, false)
+
+        timePickerDialog.show()
     }
 
     private fun addPlaceToTrip(place: TouristPlace) {
@@ -86,6 +124,20 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
         }.addOnFailureListener { e ->
             Log.e("ADD_NEW_PLACES", "Error checking day document: ${e.message}")
             Toast.makeText(this, "Error checking day document: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun validateTimes(): Boolean {
+        return if (startTimeCalendar != null && endTimeCalendar != null) {
+            if (startTimeCalendar!!.before(endTimeCalendar)) {
+                true // Validation passed
+            } else {
+                Toast.makeText(this, "Start time must be earlier than end time", Toast.LENGTH_SHORT).show()
+                false // Validation failed
+            }
+        } else {
+            Toast.makeText(this, "Please select both start and end times", Toast.LENGTH_SHORT).show()
+            false // Validation failed
         }
     }
 }

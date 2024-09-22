@@ -26,24 +26,30 @@
         android:layout_height="wrap_content"
         android:text="Start Time" />
 
-    <EditText
+    <TextView
         android:id="@+id/editTextStartTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="HH:MM (24-hour format)"
-        android:inputType="time" />
+        android:hint="Select Start Time"
+        android:clickable="true"
+        android:focusable="false"
+        android:padding="8dp"
+        android:background="@drawable/button_background_default" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="End Time" />
 
-    <EditText
+    <TextView
         android:id="@+id/editTextEndTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="HH:MM (24-hour format)"
-        android:inputType="time" />
+        android:hint="Select End Time"
+        android:clickable="true"
+        android:focusable="false"
+        android:padding="8dp"
+        android:background="@drawable/button_background_default" />
 
     <TextView
         android:layout_width="wrap_content"

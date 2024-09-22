@@ -12,6 +12,9 @@
     <color name="pending_color">#95B6E3</color> <!-- Example: Orange -->
     <color name="completed_color">#D3F7DB</color> <!-- Example: Red -->
     <color name="ongoing_color">#DBD3F7</color> <!-- Example: Green -->
+    <color name="selected_date">#95B6E3</color>
+    <color name="unselected_date">#CBCED2</color>
+    <color name="text_color_date">#595959</color>
 
 
 

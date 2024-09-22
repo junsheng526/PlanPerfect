@@ -28,14 +28,17 @@
                     android:orientation="horizontal" />
             </HorizontalScrollView>
 
-            <!-- TextView to display content for the selected day -->
-            <TextView
-                android:id="@+id/dayContentTextView"
-                android:layout_width="match_parent"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnViewRoute"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textSize="16sp"
-                android:text="Select a day to view details" />
+                android:layout_gravity="end"
+                android:background="@drawable/custom_button_001"
+                android:text="View Route"
+                android:textAllCaps="false"
+                android:drawableStart="@drawable/baseline_directions_24"
+                android:drawablePadding="10dp"
+                android:textColor="@android:color/black" />
 
             <!-- RecyclerView for displaying places -->
             <androidx.recyclerview.widget.RecyclerView

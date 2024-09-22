@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.planperfect.data.model.Day
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.data.model.Trip
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -88,7 +89,9 @@ class TripViewModel : ViewModel() {
                 (it as List<HashMap<String, Any>>).map { placeMap ->
                     TouristPlace(
                         name = placeMap["name"] as String,
-                        category = placeMap["category"] as String
+                        category = placeMap["category"] as String,
+                        latitude = placeMap["latitude"] as? Double,
+                        longitude = placeMap["longitude"] as? Double
                         // Map other fields as necessary
                     )
                 } ?: emptyList()
@@ -97,5 +100,49 @@ class TripViewModel : ViewModel() {
             Log.e("Firestore", "Error fetching places for day: $e")
             emptyList()
         }
+    }
+
+    suspend fun removePlace(tripId: String, dayId: String, place: TouristPlace): Boolean {
+        Log.d("removePlace :: ", tripId)
+        Log.d("removePlace :: ", dayId)
+        Log.d("removePlace :: ", place.toString())
+        return try {
+            // Ensure you're referencing a specific document inside the 'itineraries' collection.
+            val documentRef = FirebaseFirestore.getInstance()
+                .collection("trip")
+                .document(tripId)
+                .collection("itineraries")
+                .document(dayId)
+
+            // Get the current places list from Firestore
+            val snapshot = documentRef.get().await()
+            val placesList = snapshot.get("places") as? MutableList<HashMap<String, Any>> ?: mutableListOf()
+
+            // Find and remove the matching place from the list
+            val placeToRemove = placesList.find { it["name"] == place.name && it["category"] == place.category }
+            placeToRemove?.let {
+                placesList.remove(it)
+
+                // Update the document with the modified places list
+                documentRef.update("places", placesList).await()
+            }
+
+            true // Return true if the operation is successful
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error removing place: $e")
+            false
+        }
+    }
+
+    // Helper function to convert TouristPlace to a Map for Firestore compatibility
+    private fun TouristPlace.toMap(): Map<String, Any?> {
+        return mapOf(
+            "name" to this.name,
+            "category" to this.category,
+            "startTime" to this.startTime,
+            "endTime" to this.endTime,
+            "notes" to this.notes,
+            "imageUrl" to this.imageUrl
+        )
     }
 }

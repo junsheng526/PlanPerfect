@@ -7,13 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.FragmentTripDetailsBinding
@@ -27,9 +27,11 @@ class TripDetailsFragment : Fragment() {
 
     private val tripViewModel: TripViewModel by viewModels()
     private lateinit var binding: FragmentTripDetailsBinding
-    private var selectedDayId: String? = null  // Track the selected dayId
     private lateinit var placesAdapter: PlacesAdapter // RecyclerView adapter to display places
     private var tripId = ""
+    private var selectedDayId: String = "$tripId-Day-1"  // Track the selected dayId
+    private var selectedButton: Button? = null
+
 
     companion object {
         private const val ARG_TRIP_ID = "tripId"
@@ -51,15 +53,7 @@ class TripDetailsFragment : Fragment() {
         tripId = arguments?.getString(ARG_TRIP_ID) ?: return binding.root
 
         // Initialize the RecyclerView to display the places
-        placesAdapter = PlacesAdapter(mutableListOf())
         binding.placesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.placesRecyclerView.adapter = placesAdapter
-
-//        lifecycleScope.launch {
-//            val places = tripViewModel.getPlacesForDay(tripId, selectedDayId ?: "")
-//            // Update the UI with the list of places
-//            placesAdapter.updatePlaces(places)
-//        }
 
         // Fetch trip details from ViewModel in a coroutine
         lifecycleScope.launch {
@@ -76,13 +70,31 @@ class TripDetailsFragment : Fragment() {
                     for (i in 1..days) {
                         val button = Button(requireContext()).apply {
                             text = "Day $i"
+                            background = resources.getDrawable(R.drawable.button_background_default, null)
+                            setTextColor(resources.getColor(R.color.text_color_date, null))
+
+                            val params = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                setMargins(16, 0, 16, 0)
+                            }
+
+                            layoutParams = params
                             setOnClickListener {
                                 // Generate dayId for the selected day
                                 selectedDayId = "$tripId-Day-$i"
                                 Log.d("SELECTED ID::" , selectedDayId!!)
 
                                 // Display places for this day
-                                displayDayContent(i, binding.dayContentTextView)
+                                displayDayContent(i)
+
+                                selectedButton?.background = resources.getDrawable(R.drawable.button_background_default, null) // Reset to default
+                                background = resources.getDrawable(R.drawable.button_background_selected, null)
+                                selectedButton = this
+
+                                placesAdapter = PlacesAdapter(mutableListOf(), tripId, tripViewModel, selectedDayId, this@TripDetailsFragment)
+                                binding.placesRecyclerView.adapter = placesAdapter
                             }
                         }
                         if (i == 1) {
@@ -105,7 +117,7 @@ class TripDetailsFragment : Fragment() {
 
         // Handle FAB click to add itinerary
         binding.fabAddItinerary.setOnClickListener {
-            if (selectedDayId != null) {
+            if (selectedDayId != "") {
                 val intent = Intent(context, AddDestinationActivity::class.java)
                 intent.putExtra("tripId", tripId)
                 intent.putExtra("dayId", selectedDayId)  // Pass the selected dayId
@@ -113,6 +125,14 @@ class TripDetailsFragment : Fragment() {
             } else {
                 Toast.makeText(context, "Please select a day first", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.btnViewRoute.setOnClickListener {
+            // Handle "View Route" button click
+            Toast.makeText(context, "View Route clicked", Toast.LENGTH_SHORT).show()
+            // Add your logic to view the route here
+            val intent = Intent(context, ViewRouteActivity::class.java)
+            startActivity(intent)
         }
 
         return binding.root
@@ -132,7 +152,7 @@ class TripDetailsFragment : Fragment() {
         return (diffInMillis / (1000 * 60 * 60 * 24)).toInt() + 1  // Add 1 to include the last day
     }
 
-    private fun displayDayContent(day: Int, textView: TextView) {
+    private fun displayDayContent(day: Int) {
         val dayId = selectedDayId ?: return
         val itineraryCollection = FirebaseFirestore.getInstance()
             .collection("trip")
@@ -147,14 +167,33 @@ class TripDetailsFragment : Fragment() {
                     category = placeMap["category"] as String,
                     startTime = placeMap["startTime"] as? String,
                     endTime = placeMap["endTime"] as? String,
-                    notes = placeMap["notes"] as? String
+                    notes = placeMap["notes"] as? String,
+                    imageUrl = placeMap["imageUrl"] as String,
+                    description = placeMap["description"] as String,
                 )
-            }.sortedWith(compareBy<TouristPlace> { it.startTime }.thenBy { it.endTime })
+            }
+
+            // Define the time format you're using (e.g., "HH:mm" for 24-hour time)
+            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+            // Sort the list of places by start time and end time
+            val sortedPlaces = touristPlaces.sortedWith(compareBy(
+                { place -> place.startTime?.let { parseTime(it, timeFormat) } },
+                { place -> place.endTime?.let { parseTime(it, timeFormat) } }
+            ))
 
             // Update the RecyclerView adapter with the sorted places
-            placesAdapter.updatePlaces(touristPlaces)
+            placesAdapter.updatePlaces(sortedPlaces)
         }.addOnFailureListener {
             Toast.makeText(context, "Failed to fetch itinerary for Day $day", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun parseTime(timeString: String, timeFormat: SimpleDateFormat): Date? {
+        return try {
+            timeFormat.parse(timeString)
+        } catch (e: Exception) {
+            null // Return null if parsing fails
         }
     }
 }
