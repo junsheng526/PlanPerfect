@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +41,8 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     private val markers = mutableListOf<MarkerOptions>()
 
     private var isOptimized = false
+    private var tripId = ""
+    private var dayId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,9 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
         setupToolbar()
+
+        tripId = intent.getStringExtra("tripId") ?: ""
+        dayId = intent.getStringExtra("dayId") ?: ""
 
         // Initialize the map
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -60,8 +67,8 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         openRouteServiceApi = retrofit.create(OpenRouteServiceApi::class.java)
 
         // Fetch the trip details
-        val tripId = "a42009c2-3553-4dd4-a042-9e3dbbd01aa6"
-        val dayId = "a42009c2-3553-4dd4-a042-9e3dbbd01aa6-Day-4"
+//        val tripId = "a42009c2-3553-4dd4-a042-9e3dbbd01aa6"
+//        val dayId = "a42009c2-3553-4dd4-a042-9e3dbbd01aa6-Day-1"
         fetchTripPlaces(tripId, dayId)
 
         binding.optimizedRouteButton.setOnClickListener {
@@ -113,11 +120,14 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         for (i in 0 until places.size - 1) {
             val start = "${places[i].longitude},${places[i].latitude}"
             val end = "${places[i + 1].longitude},${places[i + 1].latitude}"
-            drawRoute(start, end, isOptimized)
+            drawRoute(places[i], places[i + 1], isOptimized)
         }
     }
 
-    private fun drawRoute(start: String, end: String, isOptimized: Boolean) {
+    private fun drawRoute(startPlace: TouristPlace, endPlace: TouristPlace, isOptimized: Boolean) {
+        val start = "${startPlace.longitude},${startPlace.latitude}"
+        val end = "${endPlace.longitude},${endPlace.latitude}"
+
         val call = openRouteServiceApi.getDirections(
             apiKey = "5b3ce3597851110001cf62484dce9b1de6da4acb9229465f7ca42db5",
             start = start,
@@ -134,7 +144,6 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                         val geometry = directionsResponse.features[0].geometry.coordinates
                         val polylinePoints = decodePolyline(geometry)
 
-                        // Choose color based on route type
                         val color = if (isOptimized) Color.parseColor("#008000") else Color.BLUE
                         val polylineOptions = PolylineOptions()
                             .addAll(polylinePoints)
@@ -142,25 +151,51 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                             .color(color)
 
                         mMap.addPolyline(polylineOptions)
-                        polylines.add(polylineOptions) // Store the polyline
+                        polylines.add(polylineOptions)
 
-                        // Fit the map to the polyline
                         val boundsBuilder = LatLngBounds.Builder()
                         polylinePoints.forEach { boundsBuilder.include(it) }
                         val bounds = boundsBuilder.build()
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
                     } else {
-                        Log.e("ViewRouteActivity", "No routes found in response")
+                        handleRouteError("No routes found between ${startPlace.name} and ${endPlace.name}. Please check your locations.")
                     }
                 } else {
-                    Log.e("ViewRouteActivity", "Failed to get directions: ${response.errorBody()?.string()}")
+                    val errorMessage = parseErrorResponse(response.errorBody()?.string(), startPlace.name, endPlace.name)
+                    handleRouteError(errorMessage)
                 }
             }
 
             override fun onFailure(call: Call<DirectionsResponse>, t: Throwable) {
                 Log.e("ViewRouteActivity", "API call failed: ${t.message}")
+                handleRouteError("Failed to retrieve directions. Please try again.")
             }
         })
+    }
+
+    private fun parseErrorResponse(errorBody: String?, startPlaceName: String, endPlaceName: String): String {
+        return try {
+            val json = JSONObject(errorBody)
+            val error = json.getJSONObject("error")
+            "Route cannot be found between $startPlaceName and $endPlaceName."
+        } catch (e: Exception) {
+            "An unexpected error occurred while trying to find a route between $startPlaceName and $endPlaceName. Please try again."
+        }
+    }
+
+    private fun showErrorDialog(message: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Error")
+        builder.setMessage(message)
+        builder.setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun handleRouteError(message: String) {
+        // Display an error message to the user
+        showErrorDialog(message)
+        Log.e("ViewRouteActivity", message) // Log the error for debugging
     }
 
     private fun addMarkers(places: List<TouristPlace>) {

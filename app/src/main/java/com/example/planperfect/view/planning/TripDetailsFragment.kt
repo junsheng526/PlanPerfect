@@ -129,10 +129,15 @@ class TripDetailsFragment : Fragment() {
 
         binding.btnViewRoute.setOnClickListener {
             // Handle "View Route" button click
-            Toast.makeText(context, "View Route clicked", Toast.LENGTH_SHORT).show()
-            // Add your logic to view the route here
-            val intent = Intent(context, ViewRouteActivity::class.java)
-            startActivity(intent)
+            if (selectedDayId.isNotEmpty()) {
+                val intent = Intent(context, ViewRouteActivity::class.java).apply {
+                    putExtra("tripId", tripId)           // Pass the tripId
+                    putExtra("dayId", selectedDayId)     // Pass the selected dayId
+                }
+                startActivity(intent)
+            } else {
+                Toast.makeText(context, "Please select a day first", Toast.LENGTH_SHORT).show()
+            }
         }
 
         return binding.root
