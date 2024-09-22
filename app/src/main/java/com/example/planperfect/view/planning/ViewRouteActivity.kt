@@ -10,7 +10,6 @@ import com.example.planperfect.R
 import com.example.planperfect.data.api.OpenRouteServiceApi
 import com.example.planperfect.data.model.DirectionsResponse
 import com.example.planperfect.data.model.TouristPlace
-import com.example.planperfect.databinding.ActivityTripDetailsBinding
 import com.example.planperfect.databinding.ActivityViewRouteBinding
 import com.example.planperfect.viewmodel.TripViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,6 +33,9 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var openRouteServiceApi: OpenRouteServiceApi
     private val tripViewModel: TripViewModel by viewModels()
     private lateinit var binding: ActivityViewRouteBinding
+
+    private val polylines = mutableListOf<PolylineOptions>()
+    private val markers = mutableListOf<MarkerOptions>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +77,6 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun fetchTripPlaces(tripId: String, dayId: String) {
         lifecycleScope.launch {
-            // Fetch places for the specified trip and day
             val places = tripViewModel.getPlacesForDay(tripId, dayId)
             if (places.isNotEmpty()) {
                 drawRoutes(places)
@@ -87,6 +88,10 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun drawRoutes(places: List<TouristPlace>) {
+        // Clear existing polylines
+        polylines.forEach { mMap.clear() }
+        polylines.clear()
+
         // Loop through places and draw routes between each consecutive pair
         for (i in 0 until places.size - 1) {
             val start = "${places[i].longitude},${places[i].latitude}"
@@ -111,7 +116,9 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (directionsResponse != null && directionsResponse.features.isNotEmpty()) {
                         val geometry = directionsResponse.features[0].geometry.coordinates
                         val polylinePoints = decodePolyline(geometry)
-                        mMap.addPolyline(PolylineOptions().addAll(polylinePoints).width(5f).color(R.color.purple_200))
+                        val polylineOptions = PolylineOptions().addAll(polylinePoints).width(5f).color(R.color.purple_200)
+                        mMap.addPolyline(polylineOptions)
+                        polylines.add(polylineOptions) // Store the polyline
 
                         // Fit the map to the polyline
                         val boundsBuilder = LatLngBounds.Builder()
@@ -133,13 +140,18 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addMarkers(places: List<TouristPlace>) {
+        // Clear existing markers
+        markers.forEach { mMap.clear() }
+        markers.clear()
+
         for (place in places) {
             val position = LatLng(place.latitude ?: 0.0, place.longitude ?: 0.0)
-            mMap.addMarker(MarkerOptions().position(position).title(place.name).snippet(place.description))
+            val markerOptions = MarkerOptions().position(position).title(place.name).snippet(place.description)
+            mMap.addMarker(markerOptions)
+            markers.add(markerOptions) // Store the marker
         }
     }
 
-    // Decode the coordinates from the response
     private fun decodePolyline(coordinates: List<List<Double>>): List<LatLng> {
         val poly = ArrayList<LatLng>()
         coordinates.forEach { coord ->
@@ -176,7 +188,6 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
             for (j in places.indices) {
                 if (i == j) dist[i][j] = 0.0
                 else {
-                    // Calculate the distance between places[i] and places[j]
                     dist[i][j] = calculateDistance(places[i], places[j])
                     if (dist[i][j] < Double.MAX_VALUE) {
                         next[i][j] = j
