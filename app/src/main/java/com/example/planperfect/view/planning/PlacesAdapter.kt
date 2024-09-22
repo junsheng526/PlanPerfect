@@ -1,6 +1,7 @@
 package com.example.planperfect.view.planning
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
@@ -46,13 +47,16 @@ class PlacesAdapter(
             .into(holder.binding.itemImage)
 
         holder.binding.closeButton.setOnClickListener {
-
             lifecycleOwner.lifecycleScope.launch {
                 val success = tripViewModel.removePlace(tripId, dayId, place)
                 if (success) {
-                    // If successful, update the local list and UI
-                    placesList.removeAt(position)
-                    notifyItemRemoved(position)
+                    if (position < placesList.size) {  // Ensure position is valid
+                        placesList.removeAt(position)
+                        notifyItemRemoved(position)
+                    } else {
+                        // Log or handle the case where position is out of bounds
+                        Log.d("PLACES_ADAPTER", "Empty List")
+                    }
                 }
             }
         }
