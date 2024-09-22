@@ -1,5 +1,6 @@
 package com.example.planperfect.view.planning
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
@@ -37,6 +38,8 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     private val polylines = mutableListOf<PolylineOptions>()
     private val markers = mutableListOf<MarkerOptions>()
 
+    private var isOptimized = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewRouteBinding.inflate(layoutInflater)
@@ -62,17 +65,30 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         fetchTripPlaces(tripId, dayId)
 
         binding.optimizedRouteButton.setOnClickListener {
-            lifecycleScope.launch {
-                val places = tripViewModel.getPlacesForDay(tripId, dayId)
-                if (places.isNotEmpty()) {
-                    val optimizedPlaces = floydWarshall(places)
-                    drawRoutes(optimizedPlaces)
-                    addMarkers(optimizedPlaces)
-                } else {
-                    Log.e("ViewRouteActivity", "No places found for trip: $tripId, day: $dayId")
+            if (!isOptimized) {
+                lifecycleScope.launch {
+                    val places = tripViewModel.getPlacesForDay(tripId, dayId)
+                    if (places.isNotEmpty()) {
+                        val optimizedPlaces = floydWarshall(places)
+                        drawRoutes(optimizedPlaces, isOptimized = true) // Call with optimized flag
+                        addMarkers(optimizedPlaces)
+                        updateUIForOptimization(true)
+                    } else {
+                        Log.e("ViewRouteActivity", "No places found for trip: $tripId, day: $dayId")
+                    }
                 }
+            } else {
+                // Cancel optimization
+                fetchTripPlaces(tripId, dayId) // Fetch original route again
+                updateUIForOptimization(false)
             }
         }
+    }
+
+    private fun updateUIForOptimization(optimized: Boolean) {
+        isOptimized = optimized
+        binding.optimizedRouteButton.text = if (optimized) "Cancel" else "Optimize Route"
+        binding.statusTextView.text = if (optimized) "Optimized Route" else "Original Route"
     }
 
     private fun fetchTripPlaces(tripId: String, dayId: String) {
@@ -81,13 +97,14 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
             if (places.isNotEmpty()) {
                 drawRoutes(places)
                 addMarkers(places)
+                updateUIForOptimization(false) // Reset UI to original
             } else {
                 Log.e("ViewRouteActivity", "No places found for trip: $tripId, day: $dayId")
             }
         }
     }
 
-    private fun drawRoutes(places: List<TouristPlace>) {
+    private fun drawRoutes(places: List<TouristPlace>, isOptimized: Boolean = false) {
         // Clear existing polylines
         polylines.forEach { mMap.clear() }
         polylines.clear()
@@ -96,11 +113,11 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         for (i in 0 until places.size - 1) {
             val start = "${places[i].longitude},${places[i].latitude}"
             val end = "${places[i + 1].longitude},${places[i + 1].latitude}"
-            drawRoute(start, end)
+            drawRoute(start, end, isOptimized)
         }
     }
 
-    private fun drawRoute(start: String, end: String) {
+    private fun drawRoute(start: String, end: String, isOptimized: Boolean) {
         val call = openRouteServiceApi.getDirections(
             apiKey = "5b3ce3597851110001cf62484dce9b1de6da4acb9229465f7ca42db5",
             start = start,
@@ -116,7 +133,14 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (directionsResponse != null && directionsResponse.features.isNotEmpty()) {
                         val geometry = directionsResponse.features[0].geometry.coordinates
                         val polylinePoints = decodePolyline(geometry)
-                        val polylineOptions = PolylineOptions().addAll(polylinePoints).width(5f).color(R.color.purple_200)
+
+                        // Choose color based on route type
+                        val color = if (isOptimized) Color.parseColor("#008000") else Color.BLUE
+                        val polylineOptions = PolylineOptions()
+                            .addAll(polylinePoints)
+                            .width(10f)
+                            .color(color)
+
                         mMap.addPolyline(polylineOptions)
                         polylines.add(polylineOptions) // Store the polyline
 
