@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".view.planning.PlacesDetailsActivity">
+
+    <!-- Toolbar for Action Bar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Place Name"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/love_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_not_favourite" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Carousel ViewPager2 with fixed height -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewCarousel"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        tools:listitem="@layout/carousel_image_item"
+        android:scrollbars="horizontal" />
+
+    <!-- Description Section -->
+    <TextView
+        android:id="@+id/detail_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Description"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/location_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Address"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp" />
+
+    <!-- Map Fragment with fixed height -->
+    <FrameLayout
+        android:id="@+id/map_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/black"
+        android:padding="2dp"
+        android:layout_margin="16dp">
+
+        <fragment
+            android:id="@+id/map_fragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+</LinearLayout>

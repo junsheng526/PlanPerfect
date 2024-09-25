@@ -29,7 +29,8 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:padding="8dp"
-            android:visibility="gone" />
+            tools:listitem="@layout/add_tourist_item"
+            android:visibility="visible" />
 
         <!-- Image when no results are found -->
         <ImageView

@@ -16,8 +16,11 @@ class FilteredAdapter(
     inner class ViewHolder(private val binding: ItemFilteredBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TouristPlace) {
+
+            val imageUrl = item.imageUrls.firstOrNull()
+
             Glide.with(binding.itemImage.context)
-                .load(item.imageUrl)
+                .load(imageUrl)
                 .placeholder(R.drawable.tourist_image_1)
                 .into(binding.itemImage)
 

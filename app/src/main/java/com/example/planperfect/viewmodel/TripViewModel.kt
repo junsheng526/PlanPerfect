@@ -133,16 +133,4 @@ class TripViewModel : ViewModel() {
             false
         }
     }
-
-    // Helper function to convert TouristPlace to a Map for Firestore compatibility
-    private fun TouristPlace.toMap(): Map<String, Any?> {
-        return mapOf(
-            "name" to this.name,
-            "category" to this.category,
-            "startTime" to this.startTime,
-            "endTime" to this.endTime,
-            "notes" to this.notes,
-            "imageUrl" to this.imageUrl
-        )
-    }
 }

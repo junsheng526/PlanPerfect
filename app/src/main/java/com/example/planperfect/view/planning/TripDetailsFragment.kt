@@ -173,8 +173,9 @@ class TripDetailsFragment : Fragment() {
                     startTime = placeMap["startTime"] as? String,
                     endTime = placeMap["endTime"] as? String,
                     notes = placeMap["notes"] as? String,
-                    imageUrl = placeMap["imageUrl"] as String,
+                    imageUrls = placeMap["imageUrls"] as List<String>,
                     description = placeMap["description"] as String,
+                    longDescription = placeMap["longDescription"] as? String,
                 )
             }
 

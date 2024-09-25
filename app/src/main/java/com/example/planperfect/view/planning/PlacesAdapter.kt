@@ -41,8 +41,10 @@ class PlacesAdapter(
         holder.binding.note.text = place.notes
         holder.binding.duration.text = "${place.startTime} - ${place.endTime}"
 
+        val imageUrl = place.imageUrls.firstOrNull()
+
         Glide.with(holder.binding.itemImage.context)
-            .load(place.imageUrl)  // item.image is the URL
+            .load(imageUrl)  // item.image is the URL
             .placeholder(R.drawable.tourist_image_1)
             .into(holder.binding.itemImage)
 

@@ -93,7 +93,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:contentDescription="Right Arrow"
-                    android:src="@drawable/ic_arrow_right" />
+                    android:src="@drawable/ic_right_arrow" />
             </LinearLayout>
 
             <!-- Fifth Row: Carousel of Cards (RecyclerView) -->

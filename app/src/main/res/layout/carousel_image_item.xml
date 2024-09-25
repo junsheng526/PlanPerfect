@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <!-- Left arrow button -->
+    <ImageButton
+        android:id="@+id/left_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_arrow_left"
+        android:padding="8dp" />
+
+    <!-- Image displayed in the carousel -->
+    <ImageView
+        android:id="@+id/carousel_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/tourist_image_1"
+        android:background="@drawable/rounded_corners"
+        android:scaleType="centerCrop"/>
+
+    <!-- Right arrow button -->
+    <ImageButton
+        android:id="@+id/right_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_right_arrow"
+        android:padding="8dp" />
+
+</LinearLayout>

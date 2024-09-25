@@ -118,11 +118,9 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Loop through places and draw routes between each consecutive pair
         for (i in 0 until places.size - 1) {
-            val start = "${places[i].longitude},${places[i].latitude}"
-            val end = "${places[i + 1].longitude},${places[i + 1].latitude}"
             drawRoute(places[i], places[i + 1], isOptimized)
         }
-    }
+    } // A > B > C =>>>>  A>B / B>C
 
     private fun drawRoute(startPlace: TouristPlace, endPlace: TouristPlace, isOptimized: Boolean) {
         val start = "${startPlace.longitude},${startPlace.latitude}"

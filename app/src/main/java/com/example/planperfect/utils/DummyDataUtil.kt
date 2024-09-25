@@ -11,79 +11,108 @@ object  DummyDataUtil {
         val firestore = FirebaseFirestore.getInstance()
         val placesCollection = firestore.collection("tourist_places")
 
-        // Define a list of dummy tourist places in Malaysia with coordinates
+        // Define a list of dummy tourist places in Malaysia with coordinates and multiple images
         val dummyPlaces = listOf(
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Petronas Twin Towers",
                 description = "Iconic skyscrapers in Kuala Lumpur, known for their sky bridge and observation deck.",
-                imageUrl = "https://www.malaysiavisa.ae/blog/wp-content/uploads/2019/06/Petronas-Twin-Towers-Malaysia.jpg",
+                imageUrls = listOf(
+                    "https://www.malaysiavisa.ae/blog/wp-content/uploads/2019/06/Petronas-Twin-Towers-Malaysia.jpg",
+                    "https://images.locationscout.net/2018/05/klcc-park-at-petronas-twin-towers-malaysia.webp?h=1400&q=80",
+                    "https://plus.unsplash.com/premium_photo-1700955569542-735a654503bf?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cGV0cm9uYXMlMjB0d2luJTIwdG93ZXJzJTJDJTIwa3VhbGElMjBsdW1wdXIlMkMlMjBtYWxheXNpYXxlbnwwfHwwfHx8MA%3D%3D"
+                ),
                 category = "Landmark",
-                latitude = 3.1570, // Latitude for Petronas Twin Towers
-                longitude = 101.7115 // Longitude for Petronas Twin Towers
+                latitude = 3.1570,
+                longitude = 101.7115
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Batu Caves",
                 description = "A limestone hill featuring a series of caves and cave temples, known for its large statue of Lord Murugan.",
-                imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk9azULZKTyouv3nwgNOLssEuhWo4OGvE0sg&s",
+                imageUrls = listOf(
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRk9azULZKTyouv3nwgNOLssEuhWo4OGvE0sg&s",
+                    "https://www.mps.gov.my/sites/default/files/styles/panopoly_image_original/public/dsc_2219.jpg?itok=VJbWjRH4",
+                    "https://cdn4.premiumread.com/?url=https://malaymail.com/malaymail/uploads/images/2024/01/24/181607.jpg&w=800&q=100&f=jpg&t=2"
+                ),
                 category = "Cultural Site",
-                latitude = 3.2389, // Latitude for Batu Caves
-                longitude = 101.6820 // Longitude for Batu Caves
+                latitude = 3.2389,
+                longitude = 101.6820
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "George Town",
                 description = "Capital of the state of Penang, famous for its well-preserved colonial buildings and street food.",
-                imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrS0sRxNuXqv4vvMbL8_ysofuLI2YYXJIPFQ&s",
+                imageUrls = listOf(
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrS0sRxNuXqv4vvMbL8_ysofuLI2YYXJIPFQ&s",
+                    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Gurney_Drive%2C_George_Town_in_2018.jpg/800px-Gurney_Drive%2C_George_Town_in_2018.jpg",
+                    "https://www.tripsavvy.com/thmb/DnTMIADvI4AZwsnKZhaAyuo9wok=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/penang-malaysia-b40c38589e794a61ba904d64c0a02c43.jpg"
+                ),
                 category = "Historical Site",
-                latitude = 5.4141, // Latitude for George Town
-                longitude = 100.3288 // Longitude for George Town
+                latitude = 5.4141,
+                longitude = 100.3288
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Langkawi",
                 description = "An archipelago known for its stunning beaches, clear waters, and lush rainforests.",
-                imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5K5KZ3svdI31zieDyvpq1GfLHT2hami9GLw&s",
+                imageUrls = listOf(
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5K5KZ3svdI31zieDyvpq1GfLHT2hami9GLw&s",
+                    "https://panoramalangkawi.com/wp-content/uploads/elementor/thumbs/hnI9yf1-oyv9enlwzsjzqytnos4159sj8k8i6ovad2b4l06irs.jpg",
+                    "https://www.berjayahotel.com/sites/default/files/blr-800x400-01.jpg"
+                ),
                 category = "Nature",
-                latitude = 6.3754, // Latitude for Langkawi
-                longitude = 99.6769 // Longitude for Langkawi
+                latitude = 6.3754,
+                longitude = 99.6769
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Mount Kinabalu",
                 description = "The highest peak in Southeast Asia, offering challenging hikes and breathtaking views.",
-                imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vNn_sXror3wQQtbKI-lPg8kxLZLp-bCagQ&s",
+                imageUrls = listOf(
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8vNn_sXror3wQQtbKI-lPg8kxLZLp-bCagQ&s",
+                    "https://cdn-v2.theculturetrip.com/1200x675/wp-content/uploads/2018/03/shutterstock_433817725.webp",
+                    "https://www.malaymail.com/malaymail/uploads/images/2023/06/16/122289.jpeg?v=1726317420"
+                ),
                 category = "Adventure",
-                latitude = 5.9751, // Latitude for Mount Kinabalu
-                longitude = 116.5583 // Longitude for Mount Kinabalu
+                latitude = 5.9751,
+                longitude = 116.5583
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Putrajaya",
                 description = "The federal administrative center of Malaysia, known for its modern architecture and beautiful gardens.",
-                imageUrl = "https://ik.imagekit.io/tvlk/blog/2022/07/du-lich-putrajaya-1.jpg?tr=c-at_max",
+                imageUrls = listOf(
+                    "https://ik.imagekit.io/tvlk/blog/2022/07/du-lich-putrajaya-1.jpg?tr=c-at_max",
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReLW7oWdylNTOj26IgNYxUSQMGhGvNMBLT0w&s"
+                ),
                 category = "Government",
-                latitude = 2.9252, // Latitude for Putrajaya
-                longitude = 101.6760 // Longitude for Putrajaya
+                latitude = 2.9252,
+                longitude = 101.6760
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Kuala Lumpur Bird Park",
                 description = "Home to a wide variety of bird species, this park is a popular attraction for nature lovers.",
-                imageUrl = "https://minio.havehalalwilltravel.com/hhwt-upload/original_images/16012023014457_1596689175418_DSC02427.JPG",
+                imageUrls = listOf(
+                    "https://minio.havehalalwilltravel.com/hhwt-upload/original_images/16012023014457_1596689175418_DSC02427.JPG",
+                    "https://media.tacdn.com/media/attractions-splice-spp-674x446/07/97/70/34.jpg"
+                ),
                 category = "Nature",
-                latitude = 3.1561, // Latitude for Kuala Lumpur Bird Park
-                longitude = 101.6869 // Longitude for Kuala Lumpur Bird Park
+                latitude = 3.1561,
+                longitude = 101.6869
             ),
             TouristPlace(
                 id = UUID.randomUUID().toString(),
                 name = "Perhentian Islands",
                 description = "A group of islands known for their crystal clear waters, ideal for snorkeling and diving.",
-                imageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZgGZda5kUlFrw-DfCXOyP5krzb8jC7eYdNA&s",
+                imageUrls = listOf(
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZgGZda5kUlFrw-DfCXOyP5krzb8jC7eYdNA&s",
+                    "https://www.scubadiving.com/sites/default/files/styles/655_1x_/public/trevor/Malaysia_DSC07415_Zakh%20Hymann.jpg?itok=jie_SRJf"
+                ),
                 category = "Beach",
-                latitude = 5.9100, // Latitude for Perhentian Islands
-                longitude = 102.7493 // Longitude for Perhentian Islands
+                latitude = 5.9100,
+                longitude = 102.7493
             )
         )
 
@@ -94,60 +123,6 @@ object  DummyDataUtil {
                 println("Added: ${place.name}")
             }
             println("Dummy Malaysia tourist places added successfully.")
-        } catch (e: Exception) {
-            println("Error adding dummy places: ${e.message}")
-        }
-    }
-    suspend fun createDummyTouristPlaces() {
-        val firestore = FirebaseFirestore.getInstance()
-        val placesCollection = firestore.collection("tourist_places")
-
-        // Define a list of dummy tourist places with new data fields
-        val dummyPlaces = listOf(
-            TouristPlace(
-                id = UUID.randomUUID().toString(),
-                name = "Eiffel Tower",
-                description = "Iconic Parisian landmark",
-                imageUrl = "https://example.com/eiffel_tower.jpg",  // Replace with actual image URLs
-                category = "Landmark"
-            ),
-            TouristPlace(
-                id = UUID.randomUUID().toString(),
-                name = "Colosseum",
-                description = "Ancient Roman gladiatorial arena",
-                imageUrl = "https://example.com/colosseum.jpg",
-                category = "Historical Site"
-            ),
-            TouristPlace(
-                id = UUID.randomUUID().toString(),
-                name = "Great Wall of China",
-                description = "Ancient fortification in China",
-                imageUrl = "https://example.com/great_wall.jpg",
-                category = "Historical Site"
-            ),
-            TouristPlace(
-                id = UUID.randomUUID().toString(),
-                name = "Statue of Liberty",
-                description = "Famous American symbol of freedom",
-                imageUrl = "https://example.com/statue_of_liberty.jpg",
-                category = "Monument"
-            ),
-            TouristPlace(
-                id = UUID.randomUUID().toString(),
-                name = "Sydney Opera House",
-                description = "Iconic Australian performing arts center",
-                imageUrl = "https://example.com/sydney_opera_house.jpg",
-                category = "Landmark"
-            )
-        )
-
-        // Insert dummy places into Firestore
-        try {
-            for (place in dummyPlaces) {
-                placesCollection.document(place.id).set(place).await()
-                println("Added: ${place.name}")
-            }
-            println("Dummy tourist places added successfully.")
         } catch (e: Exception) {
             println("Error adding dummy places: ${e.message}")
         }

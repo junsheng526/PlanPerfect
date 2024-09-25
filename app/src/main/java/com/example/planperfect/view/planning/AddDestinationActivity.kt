@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.ActivityAddDestinationBinding
-import com.example.planperfect.view.home.FilteredAdapter
 import com.example.planperfect.viewmodel.PlacesViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,7 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AddDestinationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddDestinationBinding
-    private lateinit var filteredAdapter: FilteredAdapter
+    private lateinit var filteredAdapter: AddPlacesAdapter
     private val filteredList = mutableListOf<TouristPlace>()
     private lateinit var placesViewModel: PlacesViewModel
     private var searchQuery: String = ""
@@ -41,11 +40,10 @@ class AddDestinationActivity : AppCompatActivity() {
         placesViewModel = ViewModelProvider(this).get(PlacesViewModel::class.java)
 
         // Set up RecyclerView
-        filteredAdapter = FilteredAdapter(filteredList) { place ->
-            // Handle the place selection and add to trip
-//            addPlaceToTrip(place)
+        filteredAdapter = AddPlacesAdapter(filteredList) { place ->
+
             val intent = Intent(this, AddNewPlacesDetailsActivity::class.java).apply {
-                putExtra("place", place) // Pass the selected place
+                putExtra("place", place)
                 putExtra("tripId", tripId)
                 putExtra("dayId", dayId)
             }
@@ -113,50 +111,6 @@ class AddDestinationActivity : AppCompatActivity() {
         } else {
             binding.placesRecyclerView.visibility = View.VISIBLE
             binding.noResultsImage.visibility = View.GONE
-        }
-    }
-
-    // Function to add the selected place to the trip's itinerary
-    private fun addPlaceToTrip(place: TouristPlace) {
-        // Reference to the itinerary collection for the current trip
-        val itineraryCollection = FirebaseFirestore.getInstance()
-            .collection("trip")
-            .document(tripId)
-            .collection("itineraries")
-
-        // Reference to the specific day document (based on dayId)
-        val dayDocument = itineraryCollection.document(dayId)
-
-        dayDocument.get().addOnSuccessListener { documentSnapshot ->
-            if (documentSnapshot.exists()) {
-                // If the day document exists, update the places array using arrayUnion
-                dayDocument.update("places", FieldValue.arrayUnion(place))
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Place added to itinerary", Toast.LENGTH_SHORT).show()
-                        finish() // Close the activity
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to add place: ${e.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("ADD_PLACES", "Error updating place: ${e.message}")
-                    }
-            } else {
-                // If the document doesn't exist, create it and add the place
-                val newDayData = hashMapOf(
-                    "places" to arrayListOf(place) // Initialize the "places" field with the selected place
-                )
-                dayDocument.set(newDayData)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Place added to new day itinerary", Toast.LENGTH_SHORT).show()
-                        finish() // Close the activity
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to create day and add place: ${e.message}", Toast.LENGTH_SHORT).show()
-                        Log.e("ADD_PLACES", "Error creating day and adding place: ${e.message}")
-                    }
-            }
-        }.addOnFailureListener { e ->
-            Toast.makeText(this, "Error checking day document: ${e.message}", Toast.LENGTH_SHORT).show()
-            Log.e("ADD_PLACES", "Error checking day document: ${e.message}")
         }
     }
 }
