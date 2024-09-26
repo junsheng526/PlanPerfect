@@ -5,12 +5,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.planperfect.data.model.UserRating
 import com.example.planperfect.databinding.ItemUserRatingBinding
+import com.example.planperfect.viewmodel.AuthViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class UserRatingAdapter(private var reviews: List<UserRating>) : RecyclerView.Adapter<UserRatingAdapter.ReviewViewHolder>() {
+class UserRatingAdapter(
+    private var reviews: List<UserRating>,
+    private val authViewModel: AuthViewModel
+) : RecyclerView.Adapter<UserRatingAdapter.ReviewViewHolder>() {
 
     class ReviewViewHolder(private val binding: ItemUserRatingBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(userRating: UserRating) {
-            binding.textViewRating.text = "${userRating.rating} Stars"
+        fun bind(userRating: UserRating, userName: String) {
+            binding.textViewName.text = userName
             binding.textViewReview.text = userRating.review
             binding.ratingBar.rating = userRating.rating
         }
@@ -22,7 +29,14 @@ class UserRatingAdapter(private var reviews: List<UserRating>) : RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
-        holder.bind(reviews[position])
+        val userRating = reviews[position]
+
+        // Use Coroutine to fetch the user name
+        CoroutineScope(Dispatchers.Main).launch {
+            val user = authViewModel.get(userRating.userId)
+            val userName = user?.name ?: "Unknown User"
+            holder.bind(userRating, userName)
+        }
     }
 
     override fun getItemCount(): Int = reviews.size

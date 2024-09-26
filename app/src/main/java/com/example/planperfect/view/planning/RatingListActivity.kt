@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.R
 import com.example.planperfect.data.model.UserRating
 import com.example.planperfect.databinding.ActivityRatingListBinding
+import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.ReviewViewModel
 
 class RatingListActivity : AppCompatActivity() {
@@ -17,6 +18,7 @@ class RatingListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRatingListBinding
     private lateinit var userRatingAdapter: UserRatingAdapter
     private var allReviews: List<UserRating> = emptyList()
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +28,12 @@ class RatingListActivity : AppCompatActivity() {
         setupToolbar()
 
         reviewViewModel = ViewModelProvider(this).get(ReviewViewModel::class.java)
+        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
 
         val placeId = intent.getStringExtra("placeId") ?: return
 
         // Set up RecyclerView
-        userRatingAdapter = UserRatingAdapter(emptyList())
+        userRatingAdapter = UserRatingAdapter(emptyList(), authViewModel)
         binding.recyclerViewRatings.apply {
             adapter = userRatingAdapter
             layoutManager = LinearLayoutManager(this@RatingListActivity)

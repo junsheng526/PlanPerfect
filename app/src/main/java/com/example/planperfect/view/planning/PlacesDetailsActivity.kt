@@ -18,6 +18,7 @@ import com.example.planperfect.data.model.WeatherResponse
 import com.example.planperfect.databinding.ActivityPlacesDetailsBinding
 import com.example.planperfect.utils.FavoritesManager
 import com.example.planperfect.viewmodel.PlacesViewModel
+import com.example.planperfect.viewmodel.ReviewViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -32,6 +33,7 @@ class PlacesDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlacesDetailsBinding
     private val placesViewModel: PlacesViewModel by viewModels()
+    private val reviewViewModel: ReviewViewModel by viewModels()
     private lateinit var touristPlaceId: String
     private lateinit var touristPlace: TouristPlace
     private lateinit var favoritesManager: FavoritesManager
@@ -280,12 +282,24 @@ class PlacesDetailsActivity : AppCompatActivity() {
                 var terribleCount = 0
 
                 for (document in result) {
-                    when (document.getDouble("rating")?.toInt()) {
-                        5 -> excellentCount++
-                        4 -> veryGoodCount++
-                        3 -> averageCount++
-                        2 -> poorCount++
-                        1 -> terribleCount++
+                    val rating = document.getDouble("rating")
+                    if (rating != null) {
+                        when {
+                            rating == 5.0 -> excellentCount++
+                            rating >= 4.0 && rating < 5.0 -> veryGoodCount++
+                            rating >= 3.0 && rating < 4.0 -> averageCount++
+                            rating >= 2.0 && rating < 3.0 -> poorCount++
+                            rating >= 1.0 && rating < 2.0 -> terribleCount++
+                        }
+                    }
+                }
+
+                var totalRatingPoints = 0.0
+
+                for (document in result) {
+                    val rating = document.getDouble("rating") // Get the rating as a Double
+                    if (rating != null) {
+                        totalRatingPoints += rating // Add the rating directly to total points
                     }
                 }
 
@@ -295,16 +309,17 @@ class PlacesDetailsActivity : AppCompatActivity() {
                 // Initialize progress bar maximum values
                 initializeProgressBars(reviewCount)
 
-                val totalRatingPoints = (excellentCount * 5) + (veryGoodCount * 4) + (averageCount * 3) + (poorCount * 2) + (terribleCount * 1)
                 val averageRating = if (reviewCount > 0) {
                     totalRatingPoints.toFloat() / reviewCount
                 } else {
                     0f // Set to 0 if there are no reviews
                 }
 
+                val formattedAverageRating = String.format("%.1f", averageRating)
+
                 // Update RatingBar with the calculated average rating
-                binding.ratingBar.rating = averageRating
-                binding.averageRating.text = averageRating.toString()
+                binding.ratingBar.rating = formattedAverageRating.toFloat()
+                binding.averageRating.text = formattedAverageRating
 
                 // Check if reviewCount is greater than zero to avoid division by zero
                 if (reviewCount > 0) {
@@ -329,7 +344,7 @@ class PlacesDetailsActivity : AppCompatActivity() {
                 } else {
                     // Handle the case when there are no reviews
                     updateProgressBars(0, 0, 0, 0, 0) // Reset progress bars
-                    updateRatingCounts(0,0,0,0,0)
+                    updateRatingCounts(0, 0, 0, 0, 0)
                 }
             }
             .addOnFailureListener { exception ->
