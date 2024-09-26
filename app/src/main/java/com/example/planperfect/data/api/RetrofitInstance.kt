@@ -17,3 +17,27 @@ object RetrofitInstance {
             .create(CountryApiService::class.java)
     }
 }
+
+object WeatherApi {
+    private const val BASE_URL = "https://api.weatherapi.com/v1/"
+
+    val retrofitService: WeatherService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(WeatherService::class.java)
+    }
+}
+
+object CurrencyApi {
+    private const val BASE_URL = "https://v6.exchangerate-api.com/v6/"
+
+    val retrofitService: CurrencyService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CurrencyService::class.java)
+    }
+}

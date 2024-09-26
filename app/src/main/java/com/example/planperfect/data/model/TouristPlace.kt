@@ -17,7 +17,8 @@ data class TouristPlace(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val longDescription: String? = "",
-    var isFavorite: Boolean = false // New property to track favorite status
+    var isFavorite: Boolean = false,
+    val currencyCode: String? = ""
 ) : Parcelable {
 
     // Parcelable implementation
@@ -33,7 +34,8 @@ data class TouristPlace(
         latitude = parcel.readValue(Double::class.java.classLoader) as? Double,
         longitude = parcel.readValue(Double::class.java.classLoader) as? Double,
         longDescription = parcel.readString(),
-        isFavorite = parcel.readByte() != 0.toByte() // Read the boolean value
+        isFavorite = parcel.readByte() != 0.toByte(),
+        currencyCode = parcel.readString(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -48,7 +50,8 @@ data class TouristPlace(
         parcel.writeValue(latitude)
         parcel.writeValue(longitude)
         parcel.writeValue(longDescription)
-        parcel.writeByte(if (isFavorite) 1 else 0) // Write the boolean value
+        parcel.writeByte(if (isFavorite) 1 else 0)
+        parcel.writeValue(currencyCode)
     }
 
     override fun describeContents(): Int {
@@ -77,10 +80,11 @@ data class TouristPlace(
             "latitude" to latitude,
             "longitude" to longitude,
             "longDescription" to longDescription,
-            "isFavorite" to isFavorite // Add this line if you want to save favorite status in Firestore
+            "isFavorite" to isFavorite,
+            "currencyCode" to currencyCode,
         )
     }
 
     // No-argument constructor for Firebase
-    constructor() : this("", "", "", emptyList(), "", null, null, null, null, null, "", false)
+    constructor() : this("", "", "", emptyList(), "", null, null, null, null, null, "", false, "")
 }

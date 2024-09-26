@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Review and Rating"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/rating_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="12dp"
+        android:layout_marginStart="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/average_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="4.0"
+            android:paddingEnd="16dp"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:textSize="30sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="4.0"
+                android:stepSize="0.1" />
+
+            <TextView
+                android:id="@+id/review_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(123 reviews)"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/write_review_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/custom_button_001"
+        android:text="Write a Review"
+        android:textColor="@android:color/black" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_margin="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/all_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="All"
+                android:background="@color/selected_date"
+                android:textColor="@android:color/black" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rating_5_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="5"
+                android:background="@color/unselected_date"
+                android:textColor="@android:color/black" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rating_4_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="4"
+                android:background="@color/unselected_date"
+                android:textColor="@android:color/black" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rating_3_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="3"
+                android:background="@color/unselected_date"
+                android:textColor="@android:color/black" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rating_2_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="2"
+                android:background="@color/unselected_date"
+                android:textColor="@android:color/black" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rating_1_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="1"
+                android:background="@color/unselected_date"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- RecyclerView for User Ratings -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewRatings"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp" />
+</LinearLayout>

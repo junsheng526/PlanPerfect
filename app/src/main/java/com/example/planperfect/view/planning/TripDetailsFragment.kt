@@ -176,6 +176,7 @@ class TripDetailsFragment : Fragment() {
                     imageUrls = placeMap["imageUrls"] as List<String>,
                     description = placeMap["description"] as String,
                     longDescription = placeMap["longDescription"] as? String,
+                    currencyCode = placeMap["currencyCode"] as? String,
                 )
             }
 
