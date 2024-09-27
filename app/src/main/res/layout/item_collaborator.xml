@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/imageViewProfile"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@drawable/circular_image"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="20dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/circular_image" />
+
+    <TextView
+        android:id="@+id/collaboratorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:text="Emily Tan"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/collaboratorRole" />
+
+    <TextView
+        android:id="@+id/collaboratorRole"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:text="Owner"
+        android:textColor="@color/gray_text_color"
+        android:textSize="16sp"/>
+</LinearLayout>
