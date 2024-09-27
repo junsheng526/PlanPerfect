@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.planperfect.data.model.User
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
@@ -61,5 +62,10 @@ class AuthViewModel : ViewModel() {
                 false
             }
         }
+    }
+
+    fun getCurrentUserId(): String? {
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        return firebaseUser?.uid
     }
 }

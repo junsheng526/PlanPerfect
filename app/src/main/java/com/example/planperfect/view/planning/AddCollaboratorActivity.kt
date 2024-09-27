@@ -1,20 +1,16 @@
 package com.example.planperfect.view.planning
 
-import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.planperfect.R
 import com.example.planperfect.databinding.ActivityAddCollaboratorBinding
-import com.example.planperfect.databinding.ActivityAddDestinationBinding
+import com.example.planperfect.databinding.FailedModalBinding
+import com.example.planperfect.databinding.SuccessModalBinding
+import com.example.planperfect.databinding.WarningModalBinding
 import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.CollaboratorViewModel
 
@@ -46,14 +42,18 @@ class AddCollaboratorActivity : AppCompatActivity() {
 
         // Set onClickListener for the button
         binding.addCollaboratorButton.setOnClickListener {
-            addCollaborator()
+            showConfirmationDialog(
+                null,
+                "Are you sure you want to invite this person to become a collaborator?"
+            ) {
+                addCollaborator()
+            }
         }
 
         // Observe collaborator addition status
         collaboratorViewModel.collaboratorAdditionStatus.observe(this) { success ->
             if (success) {
-                Toast.makeText(this, "Collaborator added successfully", Toast.LENGTH_SHORT).show()
-                finish() // Close activity on success
+                showSuccessDialog(null, "The collaborator invitation has been sent successfully.")
             } else {
                 Toast.makeText(this, "Failed to add collaborator", Toast.LENGTH_SHORT).show()
             }
@@ -74,7 +74,10 @@ class AddCollaboratorActivity : AppCompatActivity() {
         if (userEmail.isNotEmpty() && tripId != null) {
             collaboratorViewModel.addCollaborator(userEmail, selectedRole, tripId!!)
         } else {
-            Toast.makeText(this, "Please enter valid data", Toast.LENGTH_SHORT).show()
+            showErrorDialog(
+                null,
+                "The user ID provided is invalid. Please re-enter a valid user ID."
+            )
         }
     }
 
@@ -88,4 +91,78 @@ class AddCollaboratorActivity : AppCompatActivity() {
         }
     }
 
+    private fun showConfirmationDialog(title: String?, description: String, onConfirm: () -> Unit) {
+        // Inflate the custom modal layout using View Binding
+        val dialogViewBinding = WarningModalBinding.inflate(layoutInflater)
+
+        // Create an AlertDialog
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogViewBinding.root)
+            .create()
+
+        if (title == null) {
+            dialogViewBinding.modalTitle.visibility = View.GONE
+        } else {
+            // Customize title and description using View Binding
+            dialogViewBinding.modalTitle.text = title
+            dialogViewBinding.modalDesc.text = description
+        }
+
+        dialogViewBinding.btnConfirm.setOnClickListener {
+            onConfirm()
+            dialogBuilder.dismiss()
+        }
+
+        dialogViewBinding.btnBack.setOnClickListener {
+            dialogBuilder.dismiss()
+        }
+
+        dialogBuilder.show()
+    }
+
+    private fun showSuccessDialog(title: String?, description: String) {
+        // Inflate the custom modal layout using View Binding
+        val dialogViewBinding = SuccessModalBinding.inflate(layoutInflater)
+
+        // Create an AlertDialog
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogViewBinding.root)
+            .create()
+
+        if (title == null) {
+            dialogViewBinding.modalTitle.visibility = View.GONE
+        } else {
+            // Customize title and description using View Binding
+            dialogViewBinding.modalTitle.text = title
+            dialogViewBinding.modalDesc.text = description
+        }
+
+
+        dialogViewBinding.btnBack.setOnClickListener {
+            dialogBuilder.dismiss()
+            finish()
+        }
+
+        dialogBuilder.show()
+    }
+
+    private fun showErrorDialog(title: String?, description: String) {
+        // Inflate the custom modal layout using View Binding
+        val dialogViewBinding = FailedModalBinding.inflate(layoutInflater)
+
+        // Create an AlertDialog
+        val dialogBuilder = AlertDialog.Builder(this)
+            .setView(dialogViewBinding.root)
+            .create()
+
+        // Customize title and description using View Binding
+        dialogViewBinding.modalTitle.text = title
+        dialogViewBinding.modalDesc.text = description
+
+        dialogViewBinding.btnBack.setOnClickListener {
+            dialogBuilder.dismiss()
+        }
+
+        dialogBuilder.show()
+    }
 }

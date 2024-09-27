@@ -12,11 +12,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.FragmentTripDetailsBinding
+import com.example.planperfect.viewmodel.AuthViewModel
+import com.example.planperfect.viewmodel.CollaboratorViewModel
 import com.example.planperfect.viewmodel.TripViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
@@ -31,6 +34,11 @@ class TripDetailsFragment : Fragment() {
     private var tripId = ""
     private var selectedDayId: String = "$tripId-Day-1"  // Track the selected dayId
     private var selectedButton: Button? = null
+
+    private lateinit var collaboratorViewModel: CollaboratorViewModel
+    private lateinit var authViewModel: AuthViewModel
+
+    private var currentUserRole: String? = null
 
 
     companion object {
@@ -51,6 +59,13 @@ class TripDetailsFragment : Fragment() {
     ): View? {
         binding = FragmentTripDetailsBinding.inflate(inflater, container, false)
         tripId = arguments?.getString(ARG_TRIP_ID) ?: return binding.root
+
+        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
+
+        // Create CollaboratorViewModel directly
+        collaboratorViewModel = CollaboratorViewModel(authViewModel)
+
+        checkCurrentUserRole()
 
         // Initialize the RecyclerView to display the places
         binding.placesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -142,6 +157,17 @@ class TripDetailsFragment : Fragment() {
 
         return binding.root
     }
+    private fun checkCurrentUserRole() {
+        val currentUserId = authViewModel.getCurrentUserId() // Assumes a method to get current user ID
+        lifecycleScope.launch {
+            if (currentUserId != null && tripId != null) {
+                currentUserRole = collaboratorViewModel.getUserRole(currentUserId, tripId)
+                if(currentUserRole != null && currentUserRole == "viewer"){
+                    binding.fabAddItinerary.visibility = View.GONE
+                }
+            }
+        }
+    }
 
     private fun parseDate(dateString: String): Date? {
         return try {
@@ -190,7 +216,7 @@ class TripDetailsFragment : Fragment() {
             ))
 
             // Update the RecyclerView adapter with the sorted places
-            placesAdapter.updatePlaces(sortedPlaces)
+            placesAdapter.updatePlaces(sortedPlaces, currentUserRole)
         }.addOnFailureListener {
             Toast.makeText(context, "Failed to fetch itinerary for Day $day", Toast.LENGTH_SHORT).show()
         }

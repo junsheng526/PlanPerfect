@@ -10,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.planperfect.R
 import com.example.planperfect.data.model.Trip
 import com.example.planperfect.databinding.ActivityTripInformationBinding
 import com.example.planperfect.databinding.ActivityTripLocationBinding
+import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.TripViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -27,6 +29,7 @@ class TripLocationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTripLocationBinding
     private val tripViewModel: TripViewModel by viewModels()
+    private lateinit var authViewModel: AuthViewModel
     private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +37,7 @@ class TripLocationActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupToolbar()
         auth = Firebase.auth
+        authViewModel = ViewModelProvider(this).get(AuthViewModel::class.java)
 
         val startDate = intent.getStringExtra("startDate") ?: "N/A"
         val endDate = intent.getStringExtra("endDate") ?: "N/A"
@@ -72,6 +76,8 @@ class TripLocationActivity : AppCompatActivity() {
                     if (success) {
                         // Initialize the itinerary sub-collection
                         initializeItinerary(trip.id)
+                        authViewModel.getCurrentUserId()
+                            ?.let { it1 -> initializeCollaborator(trip.id, it1) }
 
                         Toast.makeText(this@TripLocationActivity, "Trip created successfully!", Toast.LENGTH_SHORT).show()
                         val intent = Intent(this@TripLocationActivity, TripDetailsActivity::class.java)
@@ -113,6 +119,26 @@ class TripLocationActivity : AppCompatActivity() {
                     Log.e("INITIALIZE_ITINERARY", "Error adding day $customDayId: ${e.message}")
                 }
         }
+    }
+
+    private suspend fun initializeCollaborator(tripId: String, userId: String) {
+        val col = Firebase.firestore.collection("trip")
+            .document(tripId)
+            .collection("collaborators")
+
+        // Add the user as a collaborator with the role of "owner"
+        val ownerData = hashMapOf(
+            "userId" to userId,
+            "role" to "owner" // Set the role as "owner"
+        )
+
+        col.add(ownerData)
+            .addOnSuccessListener {
+                Log.d("INITIALIZE_COLLABORATOR", "Successfully added owner with userId: $userId")
+            }
+            .addOnFailureListener { e ->
+                Log.e("INITIALIZE_COLLABORATOR", "Error adding owner: ${e.message}")
+            }
     }
 
     private fun setupToolbar() {

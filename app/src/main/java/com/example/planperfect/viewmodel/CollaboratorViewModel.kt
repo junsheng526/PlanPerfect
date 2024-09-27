@@ -14,14 +14,14 @@ import kotlinx.coroutines.withContext
 
 class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewModel() {
 
-    private val db = FirebaseFirestore.getInstance()
+    private val col = FirebaseFirestore.getInstance().collection("trip")
     val collaboratorsWithUserDetailsLiveData = MutableLiveData<List<Pair<User, String>>>()
     private val _collaboratorAdditionStatus = MutableLiveData<Boolean>()
     val collaboratorAdditionStatus: MutableLiveData<Boolean> get() = _collaboratorAdditionStatus
 
     // Fetch collaborators along with user details in real-time
     fun getCollaboratorsWithUserDetails(tripId: String) {
-        db.collection("trip").document(tripId).collection("collaborators")
+        col.document(tripId).collection("collaborators")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.e("Firestore", "Error fetching collaborators: $error")
@@ -59,7 +59,7 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                     val collaborator = Collaborator(user.id, role, "pending")
 
                     // Add the collaborator to Firestore
-                    db.collection("trip").document(tripId).collection("collaborators")
+                    col.document(tripId).collection("collaborators")
                         .document(user.id) // Use user ID as the document ID
                         .set(collaborator)
                         .await() // Wait for the operation to complete
@@ -71,6 +71,22 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                 }
             } else {
                 _collaboratorAdditionStatus.postValue(false) // User not found
+            }
+        }
+    }
+
+    suspend fun getUserRole(userId: String, tripId: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val document = col.document(tripId).collection("collaborators").document(userId).get().await()
+                if (document.exists()) {
+                    document.getString("role")
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("CollaboratorViewModel", "Failed to get user role: $e")
+                null // Return null on failure
             }
         }
     }

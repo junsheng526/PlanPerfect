@@ -1,6 +1,7 @@
 package com.example.planperfect.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,14 +15,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TripViewModel : ViewModel() {
     private val col = Firebase.firestore.collection("trip")
     val trips = MutableLiveData<List<Trip>>()
 
+    private val _tripCountByYear = MutableLiveData<Map<Int, Int>>()
+    val tripCountByYear: LiveData<Map<Int, Int>> get() = _tripCountByYear
+
     init {
         // Listen for real-time updates to trips collection
-        col.addSnapshotListener { snap, _ -> trips.value = snap?.toObjects() }
+        col.addSnapshotListener { snap, _ ->
+            val tripList = snap?.toObjects<Trip>() ?: emptyList()
+            trips.value = tripList
+            groupTripsByYear(tripList) // Group the trips by year
+        }
     }
 
     // Fetch a specific trip by its ID
@@ -172,5 +182,28 @@ class TripViewModel : ViewModel() {
                 Log.e("TripViewModel", "Error fetching trips with role filter: $e")
             }
         }
+    }
+
+    private fun groupTripsByYear(tripList: List<Trip>) {
+        // Define the date format that matches your startDate string
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        val tripCountByYear = tripList.groupBy { trip ->
+            // Try to parse the startDate to extract the year
+            try {
+                val date = dateFormat.parse(trip.startDate) // Parse the full date
+                val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault()) // Year format
+                date?.let { yearFormat.format(it).toInt() } // Extract and convert the year to an Int
+            } catch (e: Exception) {
+                Log.e("groupTripsByYear", "Error parsing date: ${trip.startDate}, error: $e")
+                null
+            }
+        }
+            .filterKeys { it != null } // Filter out null keys (failed date parsing)
+            .mapKeys { it.key!! } // Safely convert to non-nullable Int keys
+            .mapValues { (_, trips) -> trips.size } // Count the number of trips for each year
+
+        // Update the LiveData
+        _tripCountByYear.value = tripCountByYear
     }
 }

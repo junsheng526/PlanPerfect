@@ -58,4 +58,5 @@ dependencies {
     implementation("com.squareup.retrofit2:adapter-rxjava3:2.9.0")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.maps.android:android-maps-utils:2.3.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
