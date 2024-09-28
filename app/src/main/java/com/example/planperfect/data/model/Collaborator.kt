@@ -1,7 +1,7 @@
 package com.example.planperfect.data.model
 
 data class Collaborator(
-    val userId: String,
-    val role: String, // "owner", "editor", or "viewer"
-    val status: String?, // "pending", "accept", "reject"
+    val userId: String = "", // Default value
+    val role: String = "",   // Default value
+    val status: String = ""   // Default value
 )

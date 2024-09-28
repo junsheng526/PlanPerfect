@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planperfect.data.model.Collaborator
+import com.example.planperfect.data.model.CollaboratorWithUserDetails
+import com.example.planperfect.data.model.Trip
 import com.example.planperfect.data.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,7 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
     val collaboratorsWithUserDetailsLiveData = MutableLiveData<List<Pair<User, String>>>()
     private val _collaboratorAdditionStatus = MutableLiveData<Boolean>()
     val collaboratorAdditionStatus: MutableLiveData<Boolean> get() = _collaboratorAdditionStatus
+    val pendingInvitationsLiveData = MutableLiveData<List<Pair<Trip, CollaboratorWithUserDetails>>>()
 
     // Fetch collaborators along with user details in real-time
     fun getCollaboratorsWithUserDetails(tripId: String) {
@@ -89,5 +92,69 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                 null // Return null on failure
             }
         }
+    }
+
+    fun getPendingInvitations(userId: String) {
+        Log.d("getPendingInvitations", "Fetching Invitation for userId: $userId")
+
+        // Get all trips
+        col.get().addOnSuccessListener { tripSnapshot ->
+            viewModelScope.launch(Dispatchers.IO) {
+                val pendingInvitations = mutableListOf<Pair<Trip, CollaboratorWithUserDetails>>() // Updated to include user details
+
+                // Iterate over each trip document
+                for (tripDoc in tripSnapshot.documents) {
+                    val tripId = tripDoc.id
+
+                    // Fetch all collaborators for the trip in a single query
+                    val collaboratorSnapshot = col.document(tripId).collection("collaborators").get().await()
+
+                    val owner = collaboratorSnapshot.documents.firstOrNull {
+                        it.getString("role") == "owner"
+                    }?.toObject(Collaborator::class.java)
+
+                    // Fetch the collaborator that matches the provided userId and has a status of 'pending'
+                    val pendingCollaborator = collaboratorSnapshot.documents.firstOrNull {
+                        it.getString("userId") == userId && it.getString("status") == "pending"
+                    }?.toObject(Collaborator::class.java)
+
+                    // If both the trip and the owner are found
+                    if (tripDoc != null && owner != null && pendingCollaborator != null) {
+                        // Fetch user details using authViewModel for the owner
+                        val user = authViewModel.get(owner.userId) // Assuming this returns user details
+
+                        val collaboratorWithUserDetails = CollaboratorWithUserDetails(owner, user) // Custom data class to hold both collaborator and user info
+
+                        pendingInvitations.add(Pair(tripDoc.toObject(Trip::class.java)!!, collaboratorWithUserDetails))  // Add trip and collaborator with user details as a pair
+                    }
+                }
+
+                // Post the result to LiveData in the Main thread
+                withContext(Dispatchers.Main) {
+                    pendingInvitationsLiveData.value = pendingInvitations
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("CollaboratorViewModel", "Failed to fetch pending invitations: ${exception.message}")
+        }
+    }
+    fun updateCollaborationStatus(tripId: String, userId: String, newStatus: String) {
+        col.document(tripId).collection("collaborators")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.isEmpty) {
+                    val documentId = snapshot.documents[0].id
+                    col.document(tripId).collection("collaborators")
+                        .document(documentId)
+                        .update("status", newStatus)
+                        .addOnSuccessListener {
+                            Log.i("CollaboratorViewModel", "Collaboration status updated to $newStatus")
+                        }
+                        .addOnFailureListener {
+                            Log.e("CollaboratorViewModel", "Error updating status", it)
+                        }
+                }
+            }
     }
 }

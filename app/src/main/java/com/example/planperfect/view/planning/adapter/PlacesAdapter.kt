@@ -1,4 +1,4 @@
-package com.example.planperfect.view.planning
+package com.example.planperfect.view.planning.adapter
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.PlaceItemLayoutBinding // Import the binding class
+import com.example.planperfect.view.planning.TripDetailsFragment
 import com.example.planperfect.viewmodel.TripViewModel
 import kotlinx.coroutines.launch
 

@@ -2,13 +2,13 @@ package com.example.planperfect.view.planning
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.R
 import com.example.planperfect.data.model.UserRating
 import com.example.planperfect.databinding.ActivityRatingListBinding
+import com.example.planperfect.view.planning.adapter.UserRatingAdapter
 import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.ReviewViewModel
 

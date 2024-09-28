@@ -4,16 +4,10 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager2.widget.ViewPager2
-import com.example.planperfect.R
-import com.example.planperfect.data.model.Trip
-import com.example.planperfect.databinding.ActivityAuthenticationBinding
 import com.example.planperfect.databinding.ActivityTripDetailsBinding
-import com.example.planperfect.databinding.FragmentHomeBinding
+import com.example.planperfect.view.planning.adapter.TripDetailsPagerAdapter
 import com.example.planperfect.viewmodel.TripViewModel
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 

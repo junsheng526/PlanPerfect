@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.planperfect.data.model.User
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
@@ -16,6 +17,7 @@ import kotlinx.coroutines.withContext
 class AuthViewModel : ViewModel() {
     private val col = Firebase.firestore.collection("user")
     private val users = MutableLiveData<List<User>>()
+    private lateinit var auth: FirebaseAuth
 
     init {
         col.addSnapshotListener { snap, _ -> users.value = snap?.toObjects() }
@@ -67,5 +69,66 @@ class AuthViewModel : ViewModel() {
     fun getCurrentUserId(): String? {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         return firebaseUser?.uid
+    }
+
+    fun validate(user: User): String {
+        var e = ""
+
+        e += if (user.name == "") "- Name is required.\n"
+        else if (user.name.length < 3) "- Name is too short (at least 3 letters).\n"
+        else ""
+
+        e += if (user.phoneNumber == "") "- Phone Number is required.\n"
+        else ""
+
+        e += if (user.country == "") "- Country is required.\n"
+        else ""
+
+        return e
+    }
+
+    suspend fun update(user: User): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                auth = Firebase.auth
+                val currentUser = auth.currentUser
+                if (currentUser != null) {
+                    val documentRef = col.document(currentUser.uid)
+                    val updates = mutableMapOf<String, Any?>()
+
+                    // Update specific fields of the user document
+                    if (user.name.isNotEmpty()) {
+                        updates["name"] = user.name
+                    }
+                    if (user.country.isNotEmpty()) {
+                        updates["country"] = user.country
+                    }
+                    if (user.email.isNotEmpty()) {
+                        updates["email"] = user.email
+                    }
+                    if (user.phoneNumber.isNotEmpty()) {
+                        updates["phoneNumber"] = user.phoneNumber
+                    }
+                    // Update photo if available
+                    if (user.photo != null) {
+                        updates["photo"] = user.photo
+                    }
+
+                    // Perform the update with only specified fields
+                    documentRef.update(updates)
+                        .addOnSuccessListener {
+                            Log.i("FireStore", "User fields updated successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("FireStore", "Error updating user fields: $e")
+                        }
+                        .await()
+                }
+                true
+            } catch (e: Exception) {
+                Log.e("FireStore", "Firestore operation failed: $e")
+                false
+            }
+        }
     }
 }

@@ -40,14 +40,30 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <ImageView
+                <FrameLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_profile" />
+                    android:layout_weight="1">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/header_profile"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_profile" />
+
+                    <TextView
+                        android:id="@+id/letterOverlayTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textSize="24sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Second Row: Search Bar (same as Home Page) -->
             <EditText
                 android:id="@+id/searchBar"
                 android:layout_width="match_parent"

@@ -8,34 +8,50 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.planperfect.R
+import com.example.planperfect.data.model.User
+import com.example.planperfect.databinding.ActivityAddCollaboratorBinding
 import com.example.planperfect.databinding.FragmentProfileBinding
+import com.example.planperfect.utils.toBitmap
 import com.example.planperfect.view.authentication.AuthenticationActivity
+import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.TripViewModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
 
     // ViewBinding variable
-    private var _binding: FragmentProfileBinding? = null
+    private lateinit var binding: FragmentProfileBinding
     private val tripViewModel: TripViewModel by viewModels()
-    private val binding get() = _binding!!
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment using ViewBinding
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.editBtn.setOnClickListener {
+            val intent = Intent(activity, EditProfileActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.invitationBtn.setOnClickListener {
+            val intent = Intent(activity, CollaborationInvitationActivity::class.java)
+            startActivity(intent)
+        }
 
         // Set up the logout button click listener
         binding.logoutButton.setOnClickListener {
@@ -53,6 +69,45 @@ class ProfileFragment : Fragment() {
             // Log the data to ensure it's being passed correctly
             Log.d("ProfileFragment", "Trip Count By Year: $tripCountByYear")
             setupLineChart(binding.tripCountChart, tripCountByYear)
+        }
+
+        loadUserData()
+    }
+
+    private fun loadUserData() {
+        val userId = authViewModel.getCurrentUserId()
+
+        if (!userId.isNullOrBlank()) {
+            lifecycleScope.launch {
+                val user = authViewModel.get(userId) // Fetch user data from ViewModel
+                user?.let {
+                    populateUserData(it) // Populate the UI with user data
+                }
+            }
+        }
+    }
+
+    private fun populateUserData(user: User) {
+        binding.apply {
+            username.text = user.name // Populate username
+            userEmail.text = user.email // Populate email
+
+            // Populate profile picture
+            if (user.photo.toBitmap() != null) {
+                imageViewProfile.setImageBitmap(user.photo.toBitmap())
+                headerProfile.setImageBitmap(user.photo.toBitmap())
+                binding.letterOverlay.visibility = View.GONE
+                binding.letterOverlayTv.visibility = View.GONE
+            } else {
+                imageViewProfile.setImageResource(R.drawable.profile_bg)
+                headerProfile.setImageResource(R.drawable.profile_bg)
+                binding.letterOverlay.visibility = View.VISIBLE
+                binding.letterOverlayTv.visibility = View.VISIBLE
+
+                val firstLetter = user.name.firstOrNull()?.toString()?.uppercase() ?: "U"
+                binding.letterOverlay.text = firstLetter
+                binding.letterOverlayTv.text = firstLetter
+            }
         }
     }
 
@@ -102,11 +157,5 @@ class ProfileFragment : Fragment() {
             }
             invalidate() // Refresh the chart
         }
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null // Clean up binding
     }
 }

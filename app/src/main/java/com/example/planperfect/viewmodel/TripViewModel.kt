@@ -44,27 +44,6 @@ class TripViewModel : ViewModel() {
         }
     }
 
-    // Fetch a trip by a specific attribute (like destination)
-    suspend fun getTripByDestination(destination: String): Trip? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val querySnapshot =
-                    col.whereEqualTo("destination", destination).limit(1).get().await()
-                val document = querySnapshot.documents.firstOrNull()
-                if (document != null && document.exists()) {
-                    val trip = document.toObject<Trip>()
-                    trip?.id = document.id
-                    trip
-                } else {
-                    null
-                }
-            } catch (e: Exception) {
-                Log.e("Firestore", "Error fetching trip by destination: $e")
-                null
-            }
-        }
-    }
-
     // Save or update a trip
     suspend fun set(trip: Trip): Boolean {
         return withContext(Dispatchers.IO) {
@@ -166,8 +145,11 @@ class TripViewModel : ViewModel() {
 
                     if (collaborator != null) {
                         val role = collaborator.getString("role")
+                        val status = collaborator.getString("status")
+
+                        val validRole = listOf("editor", "viewer")
                         // Check if the role is one that allows access (owner, editor, viewer)
-                        if (role == "owner" || role == "editor" || role == "viewer") {
+                        if ((role in validRole && status == "accept") || role == "owner") {
                             trip?.let { tripList.add(it) }
                         }
                     }
@@ -193,7 +175,9 @@ class TripViewModel : ViewModel() {
             try {
                 val date = dateFormat.parse(trip.startDate) // Parse the full date
                 val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault()) // Year format
-                date?.let { yearFormat.format(it).toInt() } // Extract and convert the year to an Int
+                date?.let {
+                    yearFormat.format(it).toInt()
+                } // Extract and convert the year to an Int
             } catch (e: Exception) {
                 Log.e("groupTripsByYear", "Error parsing date: ${trip.startDate}, error: $e")
                 null

@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <!-- Header Layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,11 +40,29 @@
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <ImageView
+
+                <FrameLayout
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_profile" />
+                    android:layout_weight="1">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/header_profile"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_profile" />
+
+                    <TextView
+                        android:id="@+id/letterOverlayTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -58,15 +75,29 @@
             android:orientation="horizontal"
             android:paddingHorizontal="36dp">
 
-            <ImageView
-                android:id="@+id/imageViewProfile"
+            <FrameLayout
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/circular_image"
-                android:scaleType="centerCrop"
-                android:src="@drawable/circular_image" />
+                android:layout_marginEnd="20dp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imageViewProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:padding="3dp"
+                    android:src="@drawable/profile_bg" />
+
+                <TextView
+                    android:id="@+id/letterOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="48sp"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -94,7 +125,7 @@
                     android:textSize="24sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/loginBtn"
+                    android:id="@+id/editBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="12dp"
@@ -140,6 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
                     android:text="Show All"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -161,7 +193,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
-                        android:text="Total: "
+                        android:text="Total Trips: "
                         android:textSize="18sp" />
 
                     <TextView
@@ -192,6 +224,7 @@
 
         <!-- Collaboration Invitation Section -->
         <LinearLayout
+            android:id="@+id/invitationBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -200,8 +233,8 @@
             android:paddingVertical="18dp">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
                 android:scaleType="centerCrop"
@@ -209,11 +242,11 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="Collaboration Invitation"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
         </LinearLayout>
 
         <View
@@ -232,8 +265,8 @@
             android:paddingVertical="18dp">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
                 android:scaleType="centerCrop"
@@ -241,11 +274,11 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="Favorite Places"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
         </LinearLayout>
 
         <View
@@ -265,8 +298,8 @@
             android:paddingVertical="18dp">
 
             <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="16dp"
                 android:scaleType="centerCrop"
@@ -274,11 +307,11 @@
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="Logout"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>
 

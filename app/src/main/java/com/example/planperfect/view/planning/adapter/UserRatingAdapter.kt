@@ -1,4 +1,4 @@
-package com.example.planperfect.view.planning
+package com.example.planperfect.view.planning.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

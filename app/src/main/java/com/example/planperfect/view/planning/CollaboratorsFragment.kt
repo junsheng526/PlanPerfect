@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.planperfect.data.model.Collaborator
 import com.example.planperfect.data.model.User
 import com.example.planperfect.databinding.FragmentCollaboratorsBinding
+import com.example.planperfect.view.planning.adapter.CollaboratorsAdapter
 import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.CollaboratorViewModel
 

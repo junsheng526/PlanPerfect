@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.R
 import com.example.planperfect.data.model.Tourist
 import com.example.planperfect.data.model.TouristPlace
+import com.example.planperfect.data.model.User
 import com.example.planperfect.databinding.FragmentHomeBinding
 import com.example.planperfect.utils.DummyDataUtil
+import com.example.planperfect.utils.toBitmap
+import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.PlacesViewModel
 import kotlinx.coroutines.launch
 
@@ -26,7 +30,8 @@ class HomeFragment : Fragment() {
     private lateinit var filteredAdapter: FilteredAdapter
     private val filteredList = mutableListOf<TouristPlace>()
     private lateinit var placesViewModel: PlacesViewModel
-    private var searchQuery: String = "" // Track the current search query
+    private var searchQuery: String = ""
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +50,8 @@ class HomeFragment : Fragment() {
 //        lifecycleScope.launch {
 //            DummyDataUtil.createDummyMalaysiaTouristPlaces()
 //        }
+
+        loadUserData()
 
         // Set up RecyclerView with TouristAdapter (Horizontal Carousel)
         touristAdapter = TouristAdapter(touristList)
@@ -92,6 +99,34 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    private fun loadUserData() {
+        val userId = authViewModel.getCurrentUserId()
+
+        if (!userId.isNullOrBlank()) {
+            lifecycleScope.launch {
+                val user = authViewModel.get(userId) // Fetch user data from ViewModel
+                user?.let {
+                    populateUserData(it) // Populate the UI with user data
+                }
+            }
+        }
+    }
+
+    private fun populateUserData(user: User) {
+        binding.apply {
+            // Populate profile picture
+            if (user.photo.toBitmap() != null) {
+                headerProfile.setImageBitmap(user.photo.toBitmap())
+                binding.letterOverlayTv.visibility = View.GONE
+            } else {
+                headerProfile.setImageResource(R.drawable.profile_bg)
+                binding.letterOverlayTv.visibility = View.VISIBLE
+
+                val firstLetter = user.name.firstOrNull()?.toString()?.uppercase() ?: "U"
+                binding.letterOverlayTv.text = firstLetter
+            }
+        }
+    }
     @SuppressLint("NotifyDataSetChanged")
     private fun filterList(query: String) {
         // Filter places based on query

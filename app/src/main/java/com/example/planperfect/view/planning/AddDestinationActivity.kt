@@ -5,17 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.ActivityAddDestinationBinding
+import com.example.planperfect.view.planning.adapter.AddPlacesAdapter
 import com.example.planperfect.viewmodel.PlacesViewModel
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 
 class AddDestinationActivity : AppCompatActivity() {
 

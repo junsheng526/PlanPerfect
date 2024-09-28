@@ -17,6 +17,7 @@ import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.data.model.WeatherResponse
 import com.example.planperfect.databinding.ActivityPlacesDetailsBinding
 import com.example.planperfect.utils.FavoritesManager
+import com.example.planperfect.view.planning.adapter.ImageCarouselAdapter
 import com.example.planperfect.viewmodel.PlacesViewModel
 import com.example.planperfect.viewmodel.ReviewViewModel
 import com.google.android.gms.maps.CameraUpdateFactory

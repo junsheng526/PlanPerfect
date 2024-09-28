@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.FragmentTripDetailsBinding
+import com.example.planperfect.view.planning.adapter.PlacesAdapter
 import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.CollaboratorViewModel
 import com.example.planperfect.viewmodel.TripViewModel
