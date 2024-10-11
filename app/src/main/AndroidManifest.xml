@@ -17,6 +17,12 @@
         android:theme="@style/Theme.PlanPerfect"
         tools:targetApi="31">
         <activity
+            android:name=".view.profile.TravelStatisticsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.profile.FavoritePlacesActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.profile.CollaborationInvitationActivity"
             android:exported="false" />
         <activity

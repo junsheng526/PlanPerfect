@@ -1,13 +1,16 @@
 package com.example.planperfect.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planperfect.data.model.Collaborator
 import com.example.planperfect.data.model.CollaboratorWithUserDetails
 import com.example.planperfect.data.model.Trip
+import com.example.planperfect.data.model.TripStatistics
 import com.example.planperfect.data.model.User
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,7 +23,15 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
     val collaboratorsWithUserDetailsLiveData = MutableLiveData<List<Pair<User, String>>>()
     private val _collaboratorAdditionStatus = MutableLiveData<Boolean>()
     val collaboratorAdditionStatus: MutableLiveData<Boolean> get() = _collaboratorAdditionStatus
-    val pendingInvitationsLiveData = MutableLiveData<List<Pair<Trip, CollaboratorWithUserDetails>>>()
+    val pendingInvitationsLiveData =
+        MutableLiveData<List<Pair<Trip, CollaboratorWithUserDetails>>>()
+
+
+    private val _collaboratorStatisticsLiveData = MutableLiveData<Map<String, Int>>()
+    val collaboratorStatisticsLiveData: LiveData<Map<String, Int>> get() = _collaboratorStatisticsLiveData
+
+    private val _tripStatistics = MutableLiveData<TripStatistics>()
+    val tripStatistics: LiveData<TripStatistics> get() = _tripStatistics
 
     // Fetch collaborators along with user details in real-time
     fun getCollaboratorsWithUserDetails(tripId: String) {
@@ -35,16 +46,31 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                     viewModelScope.launch(Dispatchers.IO) {
                         val collaboratorsWithDetails = snapshot.documents.mapNotNull { doc ->
                             val userId = doc.getString("userId") ?: return@mapNotNull null
-                            val role = doc.getString("role") ?: "viewer"
-                            val user = authViewModel.get(userId) // Fetch the user by userId
-                            if (user != null) {
-                                Pair(user, role) // Pair user details with role
+                            val role = doc.getString("role")
+                            val status = doc.getString("status")
+                            val user = authViewModel.get(userId)
+                            if (user != null && role != null) {
+                                when {
+                                    role == "owner" -> Pair(user, role)
+                                    (role == "editor" || role == "viewer") && status == "accept" -> Pair(user, role)
+                                    else -> null
+                                }
                             } else {
                                 null
                             }
                         }
+
+                        val sortedCollaboratorsWithDetails = collaboratorsWithDetails.sortedBy {
+                            when (it.second) {
+                                "owner" -> 1
+                                "editor" -> 2
+                                "viewer" -> 3
+                                else -> 4
+                            }
+                        }
+
                         withContext(Dispatchers.Main) {
-                            collaboratorsWithUserDetailsLiveData.value = collaboratorsWithDetails
+                            collaboratorsWithUserDetailsLiveData.value = sortedCollaboratorsWithDetails
                         }
                     }
                 }
@@ -81,7 +107,8 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
     suspend fun getUserRole(userId: String, tripId: String): String? {
         return withContext(Dispatchers.IO) {
             try {
-                val document = col.document(tripId).collection("collaborators").document(userId).get().await()
+                val document =
+                    col.document(tripId).collection("collaborators").document(userId).get().await()
                 if (document.exists()) {
                     document.getString("role")
                 } else {
@@ -100,14 +127,16 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
         // Get all trips
         col.get().addOnSuccessListener { tripSnapshot ->
             viewModelScope.launch(Dispatchers.IO) {
-                val pendingInvitations = mutableListOf<Pair<Trip, CollaboratorWithUserDetails>>() // Updated to include user details
+                val pendingInvitations =
+                    mutableListOf<Pair<Trip, CollaboratorWithUserDetails>>() // Updated to include user details
 
                 // Iterate over each trip document
                 for (tripDoc in tripSnapshot.documents) {
                     val tripId = tripDoc.id
 
                     // Fetch all collaborators for the trip in a single query
-                    val collaboratorSnapshot = col.document(tripId).collection("collaborators").get().await()
+                    val collaboratorSnapshot =
+                        col.document(tripId).collection("collaborators").get().await()
 
                     val owner = collaboratorSnapshot.documents.firstOrNull {
                         it.getString("role") == "owner"
@@ -121,11 +150,20 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                     // If both the trip and the owner are found
                     if (tripDoc != null && owner != null && pendingCollaborator != null) {
                         // Fetch user details using authViewModel for the owner
-                        val user = authViewModel.get(owner.userId) // Assuming this returns user details
+                        val user =
+                            authViewModel.get(owner.userId) // Assuming this returns user details
 
-                        val collaboratorWithUserDetails = CollaboratorWithUserDetails(owner, user) // Custom data class to hold both collaborator and user info
+                        val collaboratorWithUserDetails = CollaboratorWithUserDetails(
+                            owner,
+                            user
+                        ) // Custom data class to hold both collaborator and user info
 
-                        pendingInvitations.add(Pair(tripDoc.toObject(Trip::class.java)!!, collaboratorWithUserDetails))  // Add trip and collaborator with user details as a pair
+                        pendingInvitations.add(
+                            Pair(
+                                tripDoc.toObject(Trip::class.java)!!,
+                                collaboratorWithUserDetails
+                            )
+                        )  // Add trip and collaborator with user details as a pair
                     }
                 }
 
@@ -135,9 +173,13 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                 }
             }
         }.addOnFailureListener { exception ->
-            Log.e("CollaboratorViewModel", "Failed to fetch pending invitations: ${exception.message}")
+            Log.e(
+                "CollaboratorViewModel",
+                "Failed to fetch pending invitations: ${exception.message}"
+            )
         }
     }
+
     fun updateCollaborationStatus(tripId: String, userId: String, newStatus: String) {
         col.document(tripId).collection("collaborators")
             .whereEqualTo("userId", userId)
@@ -149,12 +191,100 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                         .document(documentId)
                         .update("status", newStatus)
                         .addOnSuccessListener {
-                            Log.i("CollaboratorViewModel", "Collaboration status updated to $newStatus")
+                            Log.i(
+                                "CollaboratorViewModel",
+                                "Collaboration status updated to $newStatus"
+                            )
                         }
                         .addOnFailureListener {
                             Log.e("CollaboratorViewModel", "Error updating status", it)
                         }
                 }
             }
+    }
+
+    fun calculateStatisticsForYear(year: String, userId: String, tripList: List<Trip>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Log the start of the statistics calculation
+                Log.d("TripStatistics", "Calculating statistics for year: $year, userId: $userId")
+
+                var totalTrips = 0
+                var totalTravelDays = 0
+                var totalPlacesVisited = 0
+
+                // Iterate through all trips
+                for (trip in tripList) {
+                    val tripId = trip.id
+                    Log.d("TripStatistics", "Processing trip with ID: $tripId")
+
+                    // Fetch the collaborators for this trip to check if the user is a collaborator
+                    val acceptedCollaboratorsSnapshot = col.document(tripId).collection("collaborators")
+                        .whereEqualTo("userId", userId)
+                        .whereEqualTo("status", "accept")
+                        .get().await()
+
+                    // Query for trip owners
+                    val ownerCollaboratorsSnapshot = col.document(tripId).collection("collaborators")
+                        .whereEqualTo("userId", userId)
+                        .whereEqualTo("role", "owner")
+                        .get().await()
+
+                    // Check if user exists in collaborators
+                    if (acceptedCollaboratorsSnapshot.isEmpty && ownerCollaboratorsSnapshot.isEmpty) {
+                        Log.d("TripStatistics", "User $userId is neither an accepted collaborator nor the owner for trip $tripId")
+                        continue
+                    }
+
+                    // Check if the trip is in the specified year
+                    if (isTripInYear(trip, year)) {
+                        totalTrips++
+                        Log.d("TripStatistics", "Trip $tripId is in year $year. Total trips so far: $totalTrips")
+
+                        // Fetch the itineraries for the trip
+                        val itinerarySnapshot = col.document(tripId).collection("itineraries").get().await()
+                        Log.d("TripStatistics", "Fetched ${itinerarySnapshot.size()} itineraries for trip ID: $tripId")
+
+                        // Count travel days and places
+                        totalTravelDays += itinerarySnapshot.size() // Each document in itineraries represents a travel day
+                        Log.d("TripStatistics", "Total travel days so far: $totalTravelDays")
+
+                        for (itineraryDoc in itinerarySnapshot.documents) {
+                            val places = itineraryDoc.get("places") as? List<*>
+                            val placesCount = places?.size ?: 0
+                            totalPlacesVisited += placesCount
+                            Log.d("TripStatistics", "Trip $tripId, Itinerary: ${itineraryDoc.id}, Places visited: $placesCount")
+                        }
+                    } else {
+                        Log.d("TripStatistics", "Trip $tripId is not in year $year")
+                    }
+                }
+
+                // Log the final statistics
+                Log.d("TripStatistics", "Final statistics for year $year -> Total trips: $totalTrips, Total travel days: $totalTravelDays, Total places visited: $totalPlacesVisited")
+
+                // Update LiveData with statistics
+                val statistics = TripStatistics(totalTrips, totalTravelDays, totalPlacesVisited)
+                _tripStatistics.postValue(statistics)
+
+            } catch (e: Exception) {
+                Log.e("TripStatistics", "Failed to calculate statistics: $e")
+            }
+        }
+    }
+
+    // Helper function to determine if a trip falls within a specific year
+    private fun isTripInYear(trip: Trip, year: String): Boolean {
+        // Get the start date as a string
+        val startDate = trip.startDate // Ensure this field is present
+
+        // Check if startDate is in the expected format
+        return if (startDate != null && startDate.length == 10) {
+            // Extract the year from the start date
+            val tripYear = startDate.substring(6, 10) // Get the substring for the year (characters 6 to 9)
+            year == "All" || tripYear == year // Check against the specified year
+        } else {
+            false // Return false if the date format is incorrect
+        }
     }
 }

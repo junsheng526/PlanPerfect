@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.utils.DummyDataUtil
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.ktx.toObjects
@@ -15,8 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 class PlacesViewModel : ViewModel() {
+    private val db = FirebaseFirestore.getInstance()
     private val placesCollection = Firebase.firestore.collection("tourist_places")
     val placesLiveData = MutableLiveData<List<TouristPlace>>()
+
+    val favoritePlacesLiveData = MutableLiveData<List<TouristPlace>>()
 
     init {
         // Fetch places in real-time
@@ -52,6 +56,40 @@ class PlacesViewModel : ViewModel() {
             } catch (e: Exception) {
                 Log.e("Firestore", "Error fetching places: $e")
                 emptyList()
+            }
+        }
+    }
+
+    suspend fun getFavoritePlaces(userId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Fetch all favorite place IDs from the "favorites" collection
+                val favoriteDocs = db.collection("user")
+                    .document(userId)
+                    .collection("favorites")
+                    .get()
+                    .await()
+
+                // Extract place IDs from the favorites
+                val favoritePlaceIds = favoriteDocs.documents.map { it.getString("id")!! }
+
+                // Fetch TouristPlace details for each favorite place ID
+                val favoritePlaces = favoritePlaceIds.mapNotNull { placeId ->
+                    val placeDoc = placesCollection.document(placeId)
+                        .get()
+                        .await()
+                    placeDoc.toObject(TouristPlace::class.java)
+                }
+
+                // Post the fetched places to LiveData
+                withContext(Dispatchers.Main) {
+                    favoritePlacesLiveData.value = favoritePlaces
+                }
+            } catch (e: Exception) {
+                // Handle any errors
+                withContext(Dispatchers.Main) {
+                    favoritePlacesLiveData.value = emptyList()
+                }
             }
         }
     }

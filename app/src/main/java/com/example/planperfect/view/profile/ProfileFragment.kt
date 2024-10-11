@@ -53,6 +53,16 @@ class ProfileFragment : Fragment() {
             startActivity(intent)
         }
 
+        binding.favouriteBtn.setOnClickListener {
+            val intent = Intent(activity, FavoritePlacesActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.showAllBtn.setOnClickListener {
+            val intent = Intent(activity, TravelStatisticsActivity::class.java)
+            startActivity(intent)
+        }
+
         // Set up the logout button click listener
         binding.logoutButton.setOnClickListener {
             // Perform logout
@@ -112,6 +122,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupLineChart(lineChart: LineChart, tripCountByYear: Map<Int, Int>) {
+        Log.d("ProfileFragment", "Updating chart with data: $tripCountByYear")
+
+        val totalTrips = tripCountByYear.values.sum()
+        binding.tripCount.text = totalTrips.toString()
+
         if (tripCountByYear.isEmpty()) {
             lineChart.clear() // Clear the chart if no data
             return
@@ -120,10 +135,15 @@ class ProfileFragment : Fragment() {
         // Sort the map by year (x-axis value)
         val sortedTripCountByYear = tripCountByYear.toSortedMap()
 
+        // Log to check if duplicate entries exist
+        Log.d("ProfileFragment", "Sorted trip count by year: $sortedTripCountByYear")
+
         // Convert the sorted map to entries for the line chart
         val entries = sortedTripCountByYear.map { (year, count) ->
             Entry(year.toFloat(), count.toFloat())
         }
+
+        Log.d("ProfileFragment", "Chart entries: $entries")
 
         // Create a dataset and give it a type
         val dataSet = LineDataSet(entries, "Trips by Year").apply {

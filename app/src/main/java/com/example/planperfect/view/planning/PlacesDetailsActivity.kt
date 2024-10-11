@@ -34,7 +34,6 @@ class PlacesDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlacesDetailsBinding
     private val placesViewModel: PlacesViewModel by viewModels()
-    private val reviewViewModel: ReviewViewModel by viewModels()
     private lateinit var touristPlaceId: String
     private lateinit var touristPlace: TouristPlace
     private lateinit var favoritesManager: FavoritesManager

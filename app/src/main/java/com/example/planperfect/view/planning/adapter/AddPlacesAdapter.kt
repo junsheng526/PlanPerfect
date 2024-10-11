@@ -40,7 +40,6 @@ class AddPlacesAdapter(
             binding.root.setOnClickListener {
                 // navigate to PlacesDetailsActivity
                 val context = binding.root.context
-                Log.d("DEBUGGING HAHA", item.toString())
                 val intent = Intent(context, PlacesDetailsActivity::class.java).apply {
                     // Pass the selected TouristPlace to the details activity
                     putExtra("place", item)
