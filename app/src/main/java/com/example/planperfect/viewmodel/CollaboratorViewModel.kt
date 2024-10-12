@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planperfect.data.model.Collaborator
 import com.example.planperfect.data.model.CollaboratorWithUserDetails
+import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.data.model.Trip
 import com.example.planperfect.data.model.TripStatistics
 import com.example.planperfect.data.model.User
@@ -16,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewModel() {
 
@@ -30,8 +33,14 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
     private val _collaboratorStatisticsLiveData = MutableLiveData<Map<String, Int>>()
     val collaboratorStatisticsLiveData: LiveData<Map<String, Int>> get() = _collaboratorStatisticsLiveData
 
+    private val _calculatedTripsLiveData = MutableLiveData<List<Trip>>()
+    val calculatedTripsLiveData: LiveData<List<Trip>> get() = _calculatedTripsLiveData
+
     private val _tripStatistics = MutableLiveData<TripStatistics>()
     val tripStatistics: LiveData<TripStatistics> get() = _tripStatistics
+
+    private val _visitedPlacesLiveData = MutableLiveData<List<TouristPlace>>()
+    val visitedPlacesLiveData: LiveData<List<TouristPlace>> get() = _visitedPlacesLiveData
 
     // Fetch collaborators along with user details in real-time
     fun getCollaboratorsWithUserDetails(tripId: String) {
@@ -206,12 +215,15 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
     fun calculateStatisticsForYear(year: String, userId: String, tripList: List<Trip>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Log the start of the statistics calculation
                 Log.d("TripStatistics", "Calculating statistics for year: $year, userId: $userId")
 
                 var totalTrips = 0
                 var totalTravelDays = 0
                 var totalPlacesVisited = 0
+
+                // List to store trips that meet the criteria
+                val tripsInStatistics = mutableListOf<Trip>()
+                val uniquePlacesVisited = mutableSetOf<TouristPlace>()
 
                 // Iterate through all trips
                 for (trip in tripList) {
@@ -239,20 +251,44 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                     // Check if the trip is in the specified year
                     if (isTripInYear(trip, year)) {
                         totalTrips++
+                        tripsInStatistics.add(trip) // Add the trip to the list
+
                         Log.d("TripStatistics", "Trip $tripId is in year $year. Total trips so far: $totalTrips")
 
                         // Fetch the itineraries for the trip
                         val itinerarySnapshot = col.document(tripId).collection("itineraries").get().await()
                         Log.d("TripStatistics", "Fetched ${itinerarySnapshot.size()} itineraries for trip ID: $tripId")
 
-                        // Count travel days and places
-                        totalTravelDays += itinerarySnapshot.size() // Each document in itineraries represents a travel day
-                        Log.d("TripStatistics", "Total travel days so far: $totalTravelDays")
-
+                        // Count travel days and places only if the user is a collaborator or owner
                         for (itineraryDoc in itinerarySnapshot.documents) {
-                            val places = itineraryDoc.get("places") as? List<*>
+
+                            totalTravelDays++
+                            val places = itineraryDoc.get("places") as? List<Map<String, Any?>> ?: emptyList()
                             val placesCount = places?.size ?: 0
                             totalPlacesVisited += placesCount
+                            Log.d("TripStatistics", "Raw places data: $places")
+                            if (!places.isNullOrEmpty()) {
+                                for (placeData in places) {
+                                    val touristPlace = TouristPlace(
+                                        id = placeData["id"] as? String ?: "",
+                                        name = placeData["name"] as? String ?: "",
+                                        description = placeData["description"] as? String ?: "",
+                                        imageUrls = placeData["imageUrls"] as? List<String> ?: emptyList(),
+                                        category = placeData["category"] as? String ?: "",
+                                        startTime = placeData["startTime"] as? String,
+                                        endTime = placeData["endTime"] as? String,
+                                        notes = placeData["notes"] as? String,
+                                        latitude = placeData["latitude"] as? Double,
+                                        longitude = placeData["longitude"] as? Double,
+                                        longDescription = placeData["longDescription"] as? String ?: "",
+                                        isFavorite = placeData["isFavorite"] as? Boolean ?: false,
+                                        currencyCode = placeData["currencyCode"] as? String
+                                    )
+                                    if (!uniquePlacesVisited.any { it.name == touristPlace.name }) {
+                                        uniquePlacesVisited.add(touristPlace)
+                                    }
+                                }
+                            }
                             Log.d("TripStatistics", "Trip $tripId, Itinerary: ${itineraryDoc.id}, Places visited: $placesCount")
                         }
                     } else {
@@ -266,6 +302,11 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
                 // Update LiveData with statistics
                 val statistics = TripStatistics(totalTrips, totalTravelDays, totalPlacesVisited)
                 _tripStatistics.postValue(statistics)
+
+                // Post the list of trips used in the statistics
+                _calculatedTripsLiveData.postValue(tripsInStatistics)
+
+                _visitedPlacesLiveData.postValue(uniquePlacesVisited.toList())
 
             } catch (e: Exception) {
                 Log.e("TripStatistics", "Failed to calculate statistics: $e")

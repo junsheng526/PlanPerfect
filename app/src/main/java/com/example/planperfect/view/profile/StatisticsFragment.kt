@@ -1,5 +1,6 @@
 package com.example.planperfect.view.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -55,16 +56,24 @@ class StatisticsFragment : Fragment() {
             }
         }
 
-        binding.travelDayBtn.setOnClickListener {
-
+        collaboratorViewModel.calculatedTripsLiveData.observe(viewLifecycleOwner) { tripList ->
+            binding.tripBtn.setOnClickListener {
+                if (tripList != null && tripList.isNotEmpty()) {
+                    val intent = Intent(requireContext(), TotalTravelTripsActivity::class.java)
+                    intent.putParcelableArrayListExtra("tripList", ArrayList(tripList))
+                    startActivity(intent)
+                }
+            }
         }
 
-        binding.tripBtn.setOnClickListener {
-
-        }
-
-        binding.placesBtn.setOnClickListener {
-
+        collaboratorViewModel.calculatedTripsLiveData.observe(viewLifecycleOwner) { tripList ->
+            binding.travelDayBtn.setOnClickListener {
+                if (tripList != null && tripList.isNotEmpty()) {
+                    val intent = Intent(requireContext(), TotalTravelDaysActivity::class.java)
+                    intent.putParcelableArrayListExtra("tripList", ArrayList(tripList))
+                    startActivity(intent)
+                }
+            }
         }
 
         // Observe collaborator statistics for the year
@@ -76,6 +85,16 @@ class StatisticsFragment : Fragment() {
                 binding.totalPlacesVisitedTextView.text = "${statistics.totalPlacesVisited}"
             }
         })
+
+        collaboratorViewModel.visitedPlacesLiveData.observe(viewLifecycleOwner) { placesList ->
+            binding.placesBtn.setOnClickListener {
+                if (placesList != null && placesList.isNotEmpty()) {
+                    val intent = Intent(requireContext(), AllPlacesVisitedActivity::class.java)
+                    intent.putParcelableArrayListExtra("placesList", ArrayList(placesList))
+                    startActivity(intent)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -1,7 +1,10 @@
 package com.example.planperfect.data.model
 
+import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Trip(
     @DocumentId
     var id: String = "",
@@ -12,4 +15,4 @@ data class Trip(
     var endDate: String = "",
     var userId: String = "",
     val imageUrl: String = "",
-)
+): Parcelable

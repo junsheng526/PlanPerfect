@@ -23,6 +23,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class TripLocationActivity : AppCompatActivity() {
@@ -75,7 +78,7 @@ class TripLocationActivity : AppCompatActivity() {
                     val success: Boolean = tripViewModel.set(trip)
                     if (success) {
                         // Initialize the itinerary sub-collection
-                        initializeItinerary(trip.id)
+                        initializeItinerary(trip.id, startDate, endDate)
                         authViewModel.getCurrentUserId()
                             ?.let { it1 -> initializeCollaborator(trip.id, it1) }
 
@@ -95,13 +98,15 @@ class TripLocationActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun initializeItinerary(tripId: String) {
+    private suspend fun initializeItinerary(tripId: String, startDate: String, endDate: String) {
         val itineraryCollection = Firebase.firestore.collection("trip")
             .document(tripId)
             .collection("itineraries")
 
+        val duration = calculateTripDuration(startDate, endDate)
+
         // You can add a document for each day of the trip, for example 7 days.
-        val defaultItineraries = (1..7).map { day ->
+        val defaultItineraries = (1..duration).map { day ->
             hashMapOf(
                 "dayId" to "$tripId-Day-$day",  // Custom day ID format
                 "places" to mutableListOf<String>() // Start with an empty list for places
@@ -118,6 +123,23 @@ class TripLocationActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Log.e("INITIALIZE_ITINERARY", "Error adding day $customDayId: ${e.message}")
                 }
+        }
+    }
+
+    private fun calculateTripDuration(startDate: String, endDate: String): Int {
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return try {
+            val start = format.parse(startDate)
+            val end = format.parse(endDate)
+            if (start != null && end != null) {
+                val diffInMillis = end.time - start.time
+                (diffInMillis / (1000 * 60 * 60 * 24)).toInt() + 1 // +1 to include the start day
+            } else {
+                0
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
         }
     }
 

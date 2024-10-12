@@ -85,7 +85,7 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
         val notes = binding.editTextNotes.text.toString().trim()
 
         // Update the place object with the new details
-        val updatedPlace = place.copy(startTime = startTime, endTime = endTime, notes = notes)
+        val updatedPlace = place.copy(startTime = startTime, endTime = endTime, notes = notes, id = place.id)
 
         // Reference to the itinerary collection for the current trip
         val itineraryCollection = FirebaseFirestore.getInstance()
