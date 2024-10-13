@@ -74,6 +74,8 @@ class HomeFragment : Fragment() {
             }
         }
 
+//        placesViewModel.importTouristPlacesFromCsv(requireContext())
+
         // Handle search bar text change
         binding.searchBar.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

@@ -39,7 +39,7 @@ class PlacesAdapter(
     override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
         val place = placesList[position]
         holder.binding.placeName.text = place.name
-        holder.binding.itemDescription.text = place.description
+        holder.binding.itemDescription.text = getFirstTwoSentences(place.description)
         holder.binding.placeCategory.text = "• ${place.category}"
         holder.binding.note.text = place.notes
         holder.binding.duration.text = "${place.startTime} - ${place.endTime}"
@@ -84,6 +84,16 @@ class PlacesAdapter(
 
     override fun getItemCount(): Int {
         return placesList.size
+    }
+
+    private fun getFirstTwoSentences(description: String): String {
+        // Split the description by '.', '!', or '?' to get sentences
+        val sentences = description.split(Regex("[.!?]"))
+            .map { it.trim() } // Trim whitespace from each sentence
+            .filter { it.isNotEmpty() } // Remove any empty sentences
+
+        // Join the first two sentences and add a period at the end if they exist
+        return sentences.take(2).joinToString(". ") + if (sentences.size > 2) "." else ""
     }
 
     // Function to update the places list

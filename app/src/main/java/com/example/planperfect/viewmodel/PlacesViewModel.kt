@@ -1,9 +1,11 @@
 package com.example.planperfect.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.utils.DummyDataUtil
 import com.google.firebase.Firebase
@@ -15,6 +17,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
+import java.util.UUID
+
 class PlacesViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
     private val placesCollection = Firebase.firestore.collection("tourist_places")
@@ -34,6 +41,67 @@ class PlacesViewModel : ViewModel() {
                 placesLiveData.value = places
             }
         }
+    }
+
+    fun importTouristPlacesFromCsv(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Access the raw resource
+                val inputStream = context.resources.openRawResource(R.raw.data)
+                val reader = BufferedReader(InputStreamReader(inputStream))
+
+                // Skip the header line
+                reader.readLine()
+
+                // Read each line from the CSV
+                reader.forEachLine { line ->
+                    try {
+                        // Split by comma, but handle quoted strings
+                        val data = parseCsvLine(line)
+
+                        if (data.size >= 7) { // Ensure we have at least 7 fields
+                            val touristPlace = TouristPlace(
+                                id = UUID.randomUUID().toString(),
+                                name = data[1].trim(),
+                                description = getFirstTwoSentences(data[2].trim()),
+                                longDescription = data[2].trim(),
+                                imageUrls = listOf(data[3].trim()),
+                                category = data[4].trim(),
+                                latitude = data[5].trim().toDouble(),
+                                longitude = data[6].trim().toDouble(),
+                                currencyCode = "MYR"
+                            )
+
+                            // Insert into Firestore
+                            placesCollection.document(touristPlace.id).set(touristPlace)
+                            Log.d("Firestore", "Added: ${touristPlace.name}")
+                        } else {
+                            Log.e("CSVError", "Line skipped, not enough data: $line")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("CSVError", "Error processing line: $line. Error: ${e.message}")
+                    }
+                }
+                Log.d("Firestore", "All tourist places imported from CSV successfully.")
+            } catch (e: Exception) {
+                Log.e("Firestore", "Error importing tourist places from CSV: ${e.message}")
+            }
+        }
+    }
+
+    private fun getFirstTwoSentences(description: String): String {
+        // Split the description by '.', '!', or '?' to get sentences
+        val sentences = description.split(Regex("[.!?]"))
+            .map { it.trim() } // Trim whitespace from each sentence
+            .filter { it.isNotEmpty() } // Remove any empty sentences
+
+        // Join the first two sentences and add a period at the end if they exist
+        return sentences.take(2).joinToString(". ") + if (sentences.size > 2) "." else ""
+    }
+
+    private fun parseCsvLine(line: String): List<String> {
+        val regex = Regex("\"([^\"]*)\"|([^,\"]+)")
+        return regex.findAll(line).map { it.value.trim(' ', '"') }.toList()
     }
 
     // Fetch specific place by ID (optional)

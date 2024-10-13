@@ -117,6 +117,8 @@ class PlacesDetailsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        binding.toolbarTitle.text = touristPlace.name
+
         binding.toolbar.setNavigationOnClickListener {
             this.onBackPressed()
         }

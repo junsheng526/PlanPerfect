@@ -60,4 +60,5 @@ dependencies {
     implementation("com.google.maps.android:android-maps-utils:2.3.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    implementation("org.apache.commons:commons-csv:1.8")
 }

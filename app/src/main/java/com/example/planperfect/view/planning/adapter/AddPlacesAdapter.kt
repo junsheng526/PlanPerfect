@@ -29,7 +29,7 @@ class AddPlacesAdapter(
 
             // Set other text fields
             binding.placeName.text = item.name
-            binding.itemDescription.text = item.description
+            binding.itemDescription.text = getFirstTwoSentences(item.description)
             binding.placeCategory.text = "\u2022 ${item.category}"
 
             binding.addBtn.setOnClickListener {
@@ -47,6 +47,16 @@ class AddPlacesAdapter(
                 context.startActivity(intent)
             }
         }
+    }
+
+    private fun getFirstTwoSentences(description: String): String {
+        // Split the description by '.', '!', or '?' to get sentences
+        val sentences = description.split(Regex("[.!?]"))
+            .map { it.trim() } // Trim whitespace from each sentence
+            .filter { it.isNotEmpty() } // Remove any empty sentences
+
+        // Join the first two sentences and add a period at the end if they exist
+        return sentences.take(2).joinToString(". ") + if (sentences.size > 2) "." else ""
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
