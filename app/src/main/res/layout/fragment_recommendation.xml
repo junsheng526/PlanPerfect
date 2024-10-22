@@ -1,14 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.recommendation.RecommendationFragment">
+    tools:context=".view.recommendation.RecommendationFragment"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <!-- Checkboxes for the 8 types of tourism -->
+    <CheckBox
+        android:id="@+id/check_eco_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Eco-Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_nature_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nature Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_religious_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Religious Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_adventure_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Adventure Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_rural_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rural Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_gastronomic_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gastronomic Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_beach_tourism"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Beach Tourism"/>
+
+    <CheckBox
+        android:id="@+id/check_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Other"/>
+
+    <!-- Button to confirm and navigate -->
+    <Button
+        android:id="@+id/btn_navigate"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Recommendation" />
-
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:text="Get Recommendations" />
+</LinearLayout>
