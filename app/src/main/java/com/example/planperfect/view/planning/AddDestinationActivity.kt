@@ -37,7 +37,7 @@ class AddDestinationActivity : AppCompatActivity() {
         placesViewModel = ViewModelProvider(this).get(PlacesViewModel::class.java)
 
         // Set up RecyclerView
-        filteredAdapter = AddPlacesAdapter(filteredList) { place ->
+        filteredAdapter = AddPlacesAdapter(filteredList, ({ place ->
 
             val intent = Intent(this, AddNewPlacesDetailsActivity::class.java).apply {
                 putExtra("place", place)
@@ -45,7 +45,7 @@ class AddDestinationActivity : AppCompatActivity() {
                 putExtra("dayId", dayId)
             }
             startActivity(intent)
-        }
+        }), isAddable = true)
         binding.placesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.placesRecyclerView.adapter = filteredAdapter
 
@@ -93,7 +93,10 @@ class AddDestinationActivity : AppCompatActivity() {
     private fun filterList(query: String) {
         // Filter tourist places based on query
         val filteredItems = placesViewModel.placesLiveData.value?.filter { place ->
-            place.name.contains(query, ignoreCase = true) || place.category.contains(query, ignoreCase = true)
+            place.name.contains(query, ignoreCase = true) || place.category.contains(
+                query,
+                ignoreCase = true
+            )
         } ?: listOf()
 
         // Update filtered list and notify adapter

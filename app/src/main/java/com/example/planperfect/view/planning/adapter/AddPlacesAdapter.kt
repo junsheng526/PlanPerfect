@@ -3,6 +3,7 @@ package com.example.planperfect.view.planning.adapter
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,7 +14,8 @@ import com.example.planperfect.view.planning.PlacesDetailsActivity
 
 class AddPlacesAdapter(
     private val items: List<TouristPlace>,
-    private val onItemClicked: ((TouristPlace) -> Unit)? = null
+    private val onItemClicked: ((TouristPlace) -> Unit)? = null,
+    private val isAddable: Boolean = true
 ) : RecyclerView.Adapter<AddPlacesAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: AddTouristItemBinding) :
@@ -32,9 +34,14 @@ class AddPlacesAdapter(
             binding.itemDescription.text = getFirstTwoSentences(item.description)
             binding.placeCategory.text = "\u2022 ${item.category}"
 
-            binding.addBtn.setOnClickListener {
-                // navigate to AddNewPlacesDetailsActivity
-                onItemClicked?.invoke(item)
+            if(isAddable){
+                binding.addBtn.visibility = View.VISIBLE
+                binding.addBtn.setOnClickListener {
+                    // navigate to AddNewPlacesDetailsActivity
+                    onItemClicked?.invoke(item)
+                }
+            }else{
+                binding.addBtn.visibility = View.GONE
             }
 
             binding.root.setOnClickListener {

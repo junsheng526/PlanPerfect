@@ -104,6 +104,18 @@ class PlacesViewModel : ViewModel() {
         return regex.findAll(line).map { it.value.trim(' ', '"') }.toList()
     }
 
+    suspend fun getPlacesByName(name: String): List<TouristPlace> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val querySnapshot = placesCollection.whereEqualTo("name", name).get().await()
+                querySnapshot.toObjects<TouristPlace>()
+            } catch (e: Exception) {
+                Log.e("Firestore", "Error fetching places by name: $e")
+                emptyList()
+            }
+        }
+    }
+
     // Fetch specific place by ID (optional)
     suspend fun getPlaceById(id: String): TouristPlace? {
         return try {

@@ -57,10 +57,23 @@
         android:layout_height="wrap_content"
         android:text="Other"/>
 
+    <!-- EditText for inputting description -->
+    <EditText
+        android:id="@+id/edit_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a description..."
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:maxLines="5"
+        android:padding="10dp"
+        android:layout_marginTop="16dp" />
+
     <!-- Button to confirm and navigate -->
     <Button
         android:id="@+id/btn_navigate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get Recommendations" />
+
 </LinearLayout>

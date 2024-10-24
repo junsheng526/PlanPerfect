@@ -16,6 +16,7 @@ navigationUiKtx = "2.8.0"
 tensorflowLiteSupport = "0.1.0"
 tensorflowLiteMetadata = "0.1.0"
 litertApi = "1.0.1"
+firebaseMlModeldownloaderKtx = "25.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 tensorflow-lite-support = { group = "org.tensorflow", name = "tensorflow-lite-support", version.ref = "tensorflowLiteSupport" }
 tensorflow-lite-metadata = { group = "org.tensorflow", name = "tensorflow-lite-metadata", version.ref = "tensorflowLiteMetadata" }
 litert-api = { group = "com.google.ai.edge.litert", name = "litert-api", version.ref = "litertApi" }
+firebase-ml-modeldownloader-ktx = { group = "com.google.firebase", name = "firebase-ml-modeldownloader-ktx", version.ref = "firebaseMlModeldownloaderKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

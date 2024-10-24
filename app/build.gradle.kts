@@ -37,6 +37,10 @@ android {
         viewBinding = true
         mlModelBinding = true
     }
+
+    aaptOptions {
+        noCompress("tflite")
+    }
 }
 
 dependencies {
@@ -64,4 +68,6 @@ dependencies {
     implementation("org.apache.commons:commons-csv:1.8")
     implementation(libs.tensorflow.lite.support)
     implementation(libs.tensorflow.lite.metadata)
+    implementation("com.google.firebase:firebase-ml-model-interpreter:22.0.3")
+    implementation(libs.firebase.ml.modeldownloader.ktx)
 }

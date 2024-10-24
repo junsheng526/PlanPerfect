@@ -1,5 +1,6 @@
 package com.example.planperfect.view.recommendation
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +13,6 @@ import com.example.planperfect.data.api.ApiService
 import com.example.planperfect.data.model.CategoryRequest
 import com.example.planperfect.data.model.Recommendation
 import com.example.planperfect.databinding.FragmentRecommendationBinding
-import com.example.planperfect.ml.KnnModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,7 +39,7 @@ class RecommendationFragment : Fragment() {
 
         // Initialize Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.12:5000") // Update with your server's IP
+            .baseUrl("http://10.0.2.2:5000") // Update with your server's IP
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -100,7 +100,13 @@ class RecommendationFragment : Fragment() {
     }
 
     private fun runModelInference() {
-        val request = CategoryRequest(selectedCategories)
+        // Get the description input from the EditText
+        val description = binding.editDescription.text.toString()
+
+        // Create the request object with both categories and description
+        val request = CategoryRequest(selectedCategories, description)
+
+        Log.d("RecommendationFragment RequestDO", request.toString())
 
         apiService.getRecommendations(request).enqueue(object : Callback<List<Recommendation>> {
             override fun onResponse(
@@ -130,12 +136,14 @@ class RecommendationFragment : Fragment() {
         })
     }
 
+
+
     private fun navigateToRecommendationActivity(recommendations: List<Recommendation>) {
         // Implement navigation logic to pass recommendations to the next activity
         // Example:
-        // val intent = Intent(requireActivity(), RecommendationActivity::class.java)
-        // intent.putParcelableArrayListExtra("recommendations", ArrayList(recommendations))
-        // startActivity(intent)
+         val intent = Intent(requireActivity(), RecommendationActivity::class.java)
+         intent.putParcelableArrayListExtra("recommendations", ArrayList(recommendations))
+         startActivity(intent)
 
         Log.d("RecommendationFragment", "Navigating with recommendations: ${recommendations.size} found")
         // Navigation logic goes here
