@@ -7,8 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.GridLayout
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import com.example.planperfect.R
 import com.example.planperfect.data.api.ApiService
 import com.example.planperfect.data.model.CategoryRequest
 import com.example.planperfect.data.model.Recommendation
@@ -23,13 +28,11 @@ class RecommendationFragment : Fragment() {
 
     private lateinit var binding: FragmentRecommendationBinding
     private val selectedCategories = mutableListOf<String>()
-
+    private lateinit var apiService: ApiService
     private val allCategories = listOf(
         "Eco-Tourism", "Nature Tourism", "Religious Tourism", "Adventure Tourism",
         "Rural Tourism", "Gastronomic Tourism", "Beach Tourism", "Other"
     )
-
-    private lateinit var apiService: ApiService
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,73 +40,77 @@ class RecommendationFragment : Fragment() {
     ): View? {
         binding = FragmentRecommendationBinding.inflate(inflater, container, false)
 
+        setupCardViewListeners()
+        setupNavigateButton()
+
         // Initialize Retrofit
         val retrofit = Retrofit.Builder()
             .baseUrl("http://10.0.2.2:5000") // Update with your server's IP
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         apiService = retrofit.create(ApiService::class.java)
-
-        // Initialize checkboxes
-        val checkboxes = listOf(
-            binding.checkEcoTourism,
-            binding.checkNatureTourism,
-            binding.checkReligiousTourism,
-            binding.checkAdventureTourism,
-            binding.checkRuralTourism,
-            binding.checkGastronomicTourism,
-            binding.checkBeachTourism,
-            binding.checkOther
-        )
-
-        // Set listener for each checkbox
-        checkboxes.forEach { checkbox ->
-            checkbox.setOnCheckedChangeListener { _, isChecked ->
-                handleCheckboxSelection(checkbox, isChecked)
-            }
-        }
-
-        // Set up the navigation button
-        binding.btnNavigate.setOnClickListener {
-            if (selectedCategories.isNotEmpty()) {
-                runModelInference()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Please select at least one option",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
 
         return binding.root
     }
 
-    private fun handleCheckboxSelection(checkbox: CheckBox, isChecked: Boolean) {
-        val category = checkbox.text.toString()
+    private fun setupCardViewListeners() {
+        val categoryCards = mapOf(
+            binding.cardEcoTourism to Pair(binding.checkEcoTourism, "Eco-Tourism"),
+            binding.cardNatureTourism to Pair(binding.checkNatureTourism, "Nature Tourism"),
+            binding.cardReligiousTourism to Pair(binding.checkReligiousTourism, "Religious Tourism"),
+            binding.cardAdventureTourism to Pair(binding.checkAdventureTourism, "Adventure Tourism"),
+            binding.cardRuralTourism to Pair(binding.checkRuralTourism, "Rural Tourism"),
+            binding.cardGastronomicTourism to Pair(binding.checkGastronomicTourism, "Gastronomic Tourism"),
+            binding.cardBeachTourism to Pair(binding.checkBeachTourism, "Beach Tourism"),
+            binding.cardOtherTourism to Pair(binding.checkOtherTourism, "Other Tourism")
+        )
 
+        for ((card, pair) in categoryCards) {
+            val (checkBox, category) = pair
+
+            // CardView click listener
+            card.setOnClickListener {
+                checkBox.isChecked = !checkBox.isChecked
+                Log.d("Category Selection", "Card clicked: $category, Checked: ${checkBox.isChecked}")
+                handleCheckboxSelection(category, checkBox.isChecked)
+                Log.d("Selected Categories", selectedCategories.joinToString(", "))
+            }
+
+            // CheckBox click listener
+            checkBox.setOnClickListener {
+                Log.d("Checkbox Selection", "Checkbox clicked: $category, Checked: ${checkBox.isChecked}")
+                handleCheckboxSelection(category, checkBox.isChecked)
+                Log.d("Selected Categories", selectedCategories.joinToString(", "))
+            }
+        }
+    }
+
+    private fun handleCheckboxSelection(category: String, isChecked: Boolean) {
         if (isChecked) {
-            if (selectedCategories.size < 3) {
-                selectedCategories.add(category)
+            selectedCategories.add(category)
+        } else {
+            selectedCategories.remove(category)
+        }
+    }
+
+    private fun setupNavigateButton() {
+        binding.btnNavigate.setOnClickListener {
+            // Check if either categories are selected or description is not empty
+            if (selectedCategories.isNotEmpty() || binding.editDescription.text.isNotEmpty()) {
+                runModelInference()
             } else {
-                checkbox.isChecked = false
                 Toast.makeText(
                     requireContext(),
-                    "You can select up to 3 categories",
+                    "Please select at least one category or provide a description.",
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        } else {
-            selectedCategories.remove(category)
         }
     }
 
     private fun runModelInference() {
         // Get the description input from the EditText
         val description = binding.editDescription.text.toString()
-
-        // Create the request object with both categories and description
         val request = CategoryRequest(selectedCategories, description)
 
         Log.d("RecommendationFragment RequestDO", request.toString())
@@ -116,11 +123,6 @@ class RecommendationFragment : Fragment() {
                 if (response.isSuccessful) {
                     val recommendations = response.body()
                     recommendations?.let {
-                        // Process recommendations (example: show them in a Toast or navigate to another activity)
-                        it.forEach { recommendation ->
-                            Log.d("RecommendationFragment", "Title: ${recommendation.title}, Description: ${recommendation.description}, Image URL: ${recommendation.image_url}")
-                        }
-                        // Navigate to a new activity to display recommendations
                         navigateToRecommendationActivity(it)
                     } ?: run {
                         Log.e("RecommendationFragment", "No recommendations found")
@@ -136,16 +138,11 @@ class RecommendationFragment : Fragment() {
         })
     }
 
-
-
     private fun navigateToRecommendationActivity(recommendations: List<Recommendation>) {
-        // Implement navigation logic to pass recommendations to the next activity
-        // Example:
-         val intent = Intent(requireActivity(), RecommendationActivity::class.java)
-         intent.putParcelableArrayListExtra("recommendations", ArrayList(recommendations))
-         startActivity(intent)
+        val intent = Intent(requireActivity(), RecommendationActivity::class.java)
+        intent.putParcelableArrayListExtra("recommendations", ArrayList(recommendations))
+        startActivity(intent)
 
         Log.d("RecommendationFragment", "Navigating with recommendations: ${recommendations.size} found")
-        // Navigation logic goes here
     }
 }

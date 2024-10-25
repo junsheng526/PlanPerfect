@@ -77,26 +77,26 @@
                 android:paddingEnd="16dp" />
 
             <!-- Third Row: Filter Button and Text -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:layout_marginBottom="16dp">-->
 
-                <Button
-                    android:id="@+id/filterButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Filter"
-                    android:layout_marginEnd="8dp"/>
+<!--                <Button-->
+<!--                    android:id="@+id/filterButton"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Filter"-->
+<!--                    android:layout_marginEnd="8dp"/>-->
 
-                <TextView
-                    android:text="Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:text="Filter"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:textColor="@color/black"/>-->
+<!--            </LinearLayout>-->
 
             <!-- Fourth Row: RecyclerView for Itineraries -->
             <androidx.recyclerview.widget.RecyclerView

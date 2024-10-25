@@ -24,6 +24,8 @@ class RecommendationActivity : AppCompatActivity() {
         binding = ActivityRecommendationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupToolbar()
+
         // Initialize the RecyclerView and adapter
         placesAdapter = AddPlacesAdapter(placesList, ({ place ->
             // Handle item click
@@ -49,6 +51,16 @@ class RecommendationActivity : AppCompatActivity() {
             }
         } ?: run {
             Log.e("RecommendationActivity", "No recommendations found")
+        }
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.toolbar.setNavigationOnClickListener {
+            this.onBackPressed()
         }
     }
 

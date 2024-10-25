@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.tensorflow.lite.metadata)
     implementation("com.google.firebase:firebase-ml-model-interpreter:22.0.3")
     implementation(libs.firebase.ml.modeldownloader.ktx)
+    implementation(libs.androidx.recyclerview)
 }

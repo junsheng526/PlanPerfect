@@ -1,43 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.recommendation.RecommendationActivity">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <!-- Search bar to filter places -->
-        <EditText
-            android:id="@+id/searchBar"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/search_background"
-            android:hint="Search places"
-            android:padding="12dp" />
+            android:elevation="4dp"
+            app:navigationIcon="@drawable/ic_arrow_back">
 
-        <!-- RecyclerView for displaying places -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/placesRecyclerView"
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Tourist Recommendation"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="8dp"
-            android:visibility="visible"
-            tools:listitem="@layout/add_tourist_item" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Image when no results are found -->
-        <ImageView
-            android:id="@+id/noResultsImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/result_not_found"
-            android:visibility="gone" />
+            <!-- RecyclerView for displaying places -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/placesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:visibility="visible"
+                tools:listitem="@layout/add_tourist_item" />
+
+            <!-- Image when no results are found -->
+            <ImageView
+                android:id="@+id/noResultsImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/result_not_found"
+                android:visibility="gone" />
+        </LinearLayout>
+
+
     </LinearLayout>
 
 
