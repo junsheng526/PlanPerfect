@@ -154,7 +154,7 @@ class TripLocationActivity : AppCompatActivity() {
             "role" to "owner" // Set the role as "owner"
         )
 
-        col.add(ownerData)
+        col.document(userId).set(ownerData)
             .addOnSuccessListener {
                 Log.d("INITIALIZE_COLLABORATOR", "Successfully added owner with userId: $userId")
             }

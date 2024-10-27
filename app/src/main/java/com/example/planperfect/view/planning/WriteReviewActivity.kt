@@ -19,6 +19,8 @@ class WriteReviewActivity : AppCompatActivity() {
         binding = ActivityWriteReviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupToolbar()
+
         binding.buttonSubmit.setOnClickListener {
             submitReview()
         }
@@ -55,6 +57,16 @@ class WriteReviewActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Failed to submit review.", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.toolbar.setNavigationOnClickListener {
+            this.onBackPressed()
         }
     }
 }

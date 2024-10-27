@@ -1,17 +1,14 @@
 package com.example.planperfect.view.profile
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.planperfect.R
 import com.example.planperfect.data.model.Trip
-import com.example.planperfect.databinding.ActivityAllPlacesVisitedBinding
 import com.example.planperfect.databinding.ActivityTotalTravelDaysBinding
+import com.example.planperfect.view.planning.TripDetailsActivity
 
-class TotalTravelDaysActivity : AppCompatActivity() {
+class TotalTravelDaysActivity : AppCompatActivity(), TripsAdapter.OnTripClickListener {
 
     private lateinit var binding: ActivityTotalTravelDaysBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +42,13 @@ class TotalTravelDaysActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this) // Set layout manager
 
         // Create and set the adapter
-        val adapter = TripsAdapter(tripList, true)
+        val adapter = TripsAdapter(tripList, isTravelDays = true, onTripClickListener = this)
         recyclerView.adapter = adapter
+    }
+
+    override fun onTripClick(trip: Trip) {
+        val intent = Intent(this, TripDetailsActivity::class.java)
+        intent.putExtra("tripId", trip.id)
+        startActivity(intent)
     }
 }

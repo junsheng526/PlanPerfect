@@ -67,8 +67,6 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         openRouteServiceApi = retrofit.create(OpenRouteServiceApi::class.java)
 
         // Fetch the trip details
-//        val tripId = "a42009c2-3553-4dd4-a042-9e3dbbd01aa6"
-//        val dayId = "a42009c2-3553-4dd4-a042-9e3dbbd01aa6-Day-1"
         fetchTripPlaces(tripId, dayId)
 
         binding.optimizedRouteButton.setOnClickListener {

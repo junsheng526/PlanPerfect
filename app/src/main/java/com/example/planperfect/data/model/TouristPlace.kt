@@ -21,7 +21,7 @@ data class TouristPlace(
     val currencyCode: String? = ""
 ) : Parcelable {
 
-    // Parcelable implementation
+    // Parcelable constructor to read data
     constructor(parcel: Parcel) : this(
         id = parcel.readString() ?: "",
         name = parcel.readString() ?: "",
@@ -33,11 +33,12 @@ data class TouristPlace(
         notes = parcel.readString(),
         latitude = parcel.readValue(Double::class.java.classLoader) as? Double,
         longitude = parcel.readValue(Double::class.java.classLoader) as? Double,
-        longDescription = parcel.readString(),
+        longDescription = parcel.readString(),  // Read directly as String
         isFavorite = parcel.readByte() != 0.toByte(),
-        currencyCode = parcel.readString(),
+        currencyCode = parcel.readString()      // Read directly as String
     )
 
+    // Write data to Parcel
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
         parcel.writeString(name)
@@ -49,41 +50,32 @@ data class TouristPlace(
         parcel.writeString(notes)
         parcel.writeValue(latitude)
         parcel.writeValue(longitude)
-        parcel.writeValue(longDescription)
+        parcel.writeString(longDescription) // Write as String
         parcel.writeByte(if (isFavorite) 1 else 0)
-        parcel.writeValue(currencyCode)
+        parcel.writeString(currencyCode)    // Write as String
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     companion object CREATOR : Parcelable.Creator<TouristPlace> {
-        override fun createFromParcel(parcel: Parcel): TouristPlace {
-            return TouristPlace(parcel)
-        }
-
-        override fun newArray(size: Int): Array<TouristPlace?> {
-            return arrayOfNulls(size)
-        }
+        override fun createFromParcel(parcel: Parcel): TouristPlace = TouristPlace(parcel)
+        override fun newArray(size: Int): Array<TouristPlace?> = arrayOfNulls(size)
     }
 
-    fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "name" to name,
-            "description" to description,
-            "imageUrl" to imageUrls,
-            "category" to category,
-            "startTime" to startTime,
-            "endTime" to endTime,
-            "notes" to notes,
-            "latitude" to latitude,
-            "longitude" to longitude,
-            "longDescription" to longDescription,
-            "isFavorite" to isFavorite,
-            "currencyCode" to currencyCode,
-        )
-    }
+    fun toMap(): Map<String, Any?> = mapOf(
+        "name" to name,
+        "description" to description,
+        "imageUrls" to imageUrls,
+        "category" to category,
+        "startTime" to startTime,
+        "endTime" to endTime,
+        "notes" to notes,
+        "latitude" to latitude,
+        "longitude" to longitude,
+        "longDescription" to longDescription,
+        "isFavorite" to isFavorite,
+        "currencyCode" to currencyCode
+    )
 
     // No-argument constructor for Firebase
     constructor() : this("", "", "", emptyList(), "", null, null, null, null, null, "", false, "")

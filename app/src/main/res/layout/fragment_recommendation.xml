@@ -1,439 +1,499 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fillViewport="true">
+    tools:context=".view.recommendation.RecommendationFragment">
 
-    <LinearLayout
+    <ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        tools:context=".view.recommendation.RecommendationFragment">
-        <!-- Row 1 -->
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- Eco-Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_eco_tourism"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                app:cardCornerRadius="16dp"
-                android:padding="12dp">
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/logo" />
 
-                    <CheckBox
-                        android:id="@+id/check_eco_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
+                <TextView
+                    android:id="@+id/actionbarTv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/icon_eco_tourism"
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/header_profile"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
-                        android:layout_below="@id/check_eco_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_eco" />
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_profile" />
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_eco_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:text="Eco-Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
+                        android:id="@+id/letterOverlayTv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
 
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                </FrameLayout>
+            </LinearLayout>
 
-            <!-- Nature Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_nature_tourism"
-                app:cardCornerRadius="16dp"
-                android:layout_width="0dp"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
+                android:text="Provide some travel information to get the recommendation on the activities."
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+            <!-- Row 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
 
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <!-- Eco-Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_eco_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
 
-                    <CheckBox
-                        android:id="@+id/check_nature_tourism"
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
+                        android:background="@drawable/bg_primary_gradient">
 
-                    <ImageView
-                        android:id="@+id/icon_nature_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_nature_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_nature" />
+                        <CheckBox
+                            android:id="@+id/check_eco_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        <ImageView
+                            android:id="@+id/icon_eco_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_eco_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_eco" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_eco_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Eco-Tourism"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Nature Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_nature_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_nature_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:text="Nature Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
+                        android:background="@drawable/bg_primary_gradient">
 
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                        <CheckBox
+                            android:id="@+id/check_nature_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_nature_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_nature_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_nature" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_nature_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Nature Tourism"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- Religious Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_religious_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_primary_gradient">
+
+                        <CheckBox
+                            android:id="@+id/check_religious_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_religious_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_religious_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_religious" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_religious_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Religious Tourism"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Adventure Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_adventure_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_primary_gradient">
+
+                        <CheckBox
+                            android:id="@+id/check_adventure_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_adventure_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_adventure_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_adventure" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_adventure_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Adventure Tourism"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Row 3 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- beach Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_beach_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_primary_gradient">
+
+                        <CheckBox
+                            android:id="@+id/check_beach_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_beach_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_beach_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_beach" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_beach_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Beach Tourism"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- rural Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_rural_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_primary_gradient">
+
+                        <CheckBox
+                            android:id="@+id/check_rural_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_health_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_rural_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_rural" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_health_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Rural Tourism"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Row 4 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- Culinary Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_gastronomic_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_primary_gradient">
+
+                        <CheckBox
+                            android:id="@+id/check_gastronomic_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_gastronomic_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_gastronomic_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_gastronomic" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_gastronomic_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Gastronomic Tourism"
+                            android:textAlignment="center"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Sports Tourism Card -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_other_tourism"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true"
+                    android:padding="12dp"
+                    app:cardCornerRadius="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_primary_gradient">
+
+                        <CheckBox
+                            android:id="@+id/check_other_tourism"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true" />
+
+                        <ImageView
+                            android:id="@+id/icon_other_tourism"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_below="@id/check_other_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/ic_urban" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/icon_other_tourism"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="8dp"
+                            android:text="Other\nTourism"
+                            android:textAlignment="center"
+                            android:textAppearance="?attr/textAppearanceBody1" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Description Input Field -->
+            <EditText
+                android:id="@+id/edit_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Enter a description..."
+                android:inputType="textMultiLine"
+                android:maxLines="5"
+                android:minLines="3"
+                android:padding="10dp" />
+
+            <!-- Button to confirm and navigate -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_navigate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="4dp"
+                android:background="@drawable/custom_button_001"
+                android:text="Next"
+                android:textColor="@color/black" />
         </LinearLayout>
+    </ScrollView>
+</FrameLayout>
 
-        <!-- Row 2 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <!-- Religious Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_religious_tourism"
-                app:cardCornerRadius="16dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
-
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <CheckBox
-                        android:id="@+id/check_religious_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
-
-                    <ImageView
-                        android:id="@+id/icon_religious_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_religious_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_religious" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_religious_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:text="Religious Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Adventure Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_adventure_tourism"
-                app:cardCornerRadius="16dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
-
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <CheckBox
-                        android:id="@+id/check_adventure_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
-
-                    <ImageView
-                        android:id="@+id/icon_adventure_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_adventure_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_adventure" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_adventure_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:text="Adventure Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-
-        <!-- Row 3 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <!-- beach Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_beach_tourism"
-                app:cardCornerRadius="16dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
-
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <CheckBox
-                        android:id="@+id/check_beach_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
-
-                    <ImageView
-                        android:id="@+id/icon_beach_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_beach_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_beach" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_beach_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:text="Beach Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- rural Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_rural_tourism"
-                app:cardCornerRadius="16dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
-
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <CheckBox
-                        android:id="@+id/check_rural_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
-
-                    <ImageView
-                        android:id="@+id/icon_health_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_rural_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_rural" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_health_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:text="Rural Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-
-        <!-- Row 4 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <!-- Culinary Tourism Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_gastronomic_tourism"
-                app:cardCornerRadius="16dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
-
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <CheckBox
-                        android:id="@+id/check_gastronomic_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
-
-                    <ImageView
-                        android:id="@+id/icon_gastronomic_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_gastronomic_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_gastronomic" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_gastronomic_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:textAlignment="center"
-                        android:text="Gastronomic Tourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Sports Tourism Card -->
-            <androidx.cardview.widget.CardView
-                app:cardCornerRadius="16dp"
-                android:id="@+id/card_other_tourism"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="?attr/colorSurface"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:focusable="true"
-                android:layout_weight="1"
-                android:padding="12dp">
-
-                <RelativeLayout
-                    android:background="@drawable/bg_primary_gradient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <CheckBox
-                        android:id="@+id/check_other_tourism"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true" />
-
-                    <ImageView
-                        android:id="@+id/icon_other_tourism"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_below="@id/check_other_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:src="@drawable/ic_urban" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/icon_other_tourism"
-                        android:layout_centerHorizontal="true"
-                        android:layout_margin="8dp"
-                        android:textAlignment="center"
-                        android:text="Other\nTourism"
-                        android:textAppearance="?attr/textAppearanceBody1" />
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-
-        <!-- Description Input Field -->
-        <EditText
-            android:id="@+id/edit_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Enter a description..."
-            android:inputType="textMultiLine"
-            android:maxLines="5"
-            android:minLines="3"
-            android:padding="10dp" />
-
-        <!-- Button to confirm and navigate -->
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_navigate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="4dp"
-            android:background="@drawable/custom_button_001"
-            android:text="Next"
-            android:textColor="@color/black"/>
-    </LinearLayout>
-
-</ScrollView>

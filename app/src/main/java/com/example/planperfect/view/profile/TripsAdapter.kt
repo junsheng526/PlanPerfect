@@ -14,8 +14,13 @@ import java.util.Locale
 
 class TripsAdapter(
     private val tripList: List<Trip>,
-    private val isTravelDays: Boolean
+    private val isTravelDays: Boolean,
+    private val onTripClickListener: OnTripClickListener
 ) : RecyclerView.Adapter<TripsAdapter.TripViewHolder>() {
+
+    interface OnTripClickListener {
+        fun onTripClick(trip: Trip)
+    }
 
     // ViewHolder class using View Binding for item views
     class TripViewHolder(private val binding: StatisticItineraryItemBinding) :
@@ -23,7 +28,7 @@ class TripsAdapter(
 
         // Bind the trip data to the views
         @SuppressLint("SetTextI18n")
-        fun bind(trip: Trip, position: Int, isTravelDays: Boolean) {
+        fun bind(trip: Trip, position: Int, isTravelDays: Boolean, listener: OnTripClickListener?) {
             if (isTravelDays) {
                 val duration = calculateTripDuration(trip.startDate, trip.endDate)
                 binding.itemTitleTv.text = "Travel duration : $duration"
@@ -40,6 +45,10 @@ class TripsAdapter(
                 .load(trip.imageUrl)
                 .placeholder(R.drawable.tourist_image_1) // Placeholder image
                 .into(binding.imageViewBackground)
+
+            binding.root.setOnClickListener {
+                listener?.onTripClick(trip)
+            }
 
             Log.d("TripsAdapter", "Image URL: ${trip.imageUrl}")
         }
@@ -74,7 +83,7 @@ class TripsAdapter(
         // Get the current trip at the given position
         val currentTrip = tripList[position]
         // Bind the data to the ViewHolder
-        holder.bind(currentTrip, position, isTravelDays)
+        holder.bind(currentTrip, position, isTravelDays, onTripClickListener)
     }
 
     // Return the size of the trip list (invoked by the layout manager)

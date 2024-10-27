@@ -26,7 +26,9 @@ class AllPlacesVisitedActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupToolbar()
 
-        val placesList: ArrayList<TouristPlace>? = intent.getParcelableArrayListExtra("placesList")
+//        val placesList: ArrayList<TouristPlace>? = intent.getParcelableArrayListExtra("placesList")
+        val placesList = intent.getParcelableArrayListExtra<TouristPlace>("placesList")
+//        val placesList = intent.getSerializableExtra("placesList") as? ArrayList<TouristPlace>
 
         // Set up the RecyclerView
         binding.itineraryRecyclerView.layoutManager = LinearLayoutManager(this)

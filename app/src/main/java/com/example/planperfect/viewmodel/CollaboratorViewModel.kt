@@ -32,13 +32,10 @@ class CollaboratorViewModel(private val authViewModel: AuthViewModel) : ViewMode
 
     private val _collaboratorStatisticsLiveData = MutableLiveData<Map<String, Int>>()
     val collaboratorStatisticsLiveData: LiveData<Map<String, Int>> get() = _collaboratorStatisticsLiveData
-
     private val _calculatedTripsLiveData = MutableLiveData<List<Trip>>()
     val calculatedTripsLiveData: LiveData<List<Trip>> get() = _calculatedTripsLiveData
-
     private val _tripStatistics = MutableLiveData<TripStatistics>()
     val tripStatistics: LiveData<TripStatistics> get() = _tripStatistics
-
     private val _visitedPlacesLiveData = MutableLiveData<List<TouristPlace>>()
     val visitedPlacesLiveData: LiveData<List<TouristPlace>> get() = _visitedPlacesLiveData
 

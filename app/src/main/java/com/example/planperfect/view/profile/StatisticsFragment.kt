@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.Serializable
 
 class StatisticsFragment : Fragment() {
 
@@ -85,6 +86,11 @@ class StatisticsFragment : Fragment() {
                 binding.totalPlacesVisitedTextView.text = "${statistics.totalPlacesVisited}"
             }
         })
+
+        binding.placesBtn.setOnClickListener {
+            val intent = Intent(requireContext(), AllPlacesVisitedActivity::class.java)
+            startActivity(intent)
+        }
 
         collaboratorViewModel.visitedPlacesLiveData.observe(viewLifecycleOwner) { placesList ->
             binding.placesBtn.setOnClickListener {
