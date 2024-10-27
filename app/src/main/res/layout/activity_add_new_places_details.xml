@@ -1,73 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:context=".view.planning.AddNewPlacesDetailsActivity"
-    android:padding="16dp">
+    tools:context=".view.planning.AddNewPlacesDetailsActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Place Details"
-        android:textSize="24sp"
-        android:layout_marginBottom="16dp" />
-
-    <EditText
-        android:id="@+id/editTextPlaceName"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Place Name"
-        android:inputType="text" />
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_arrow_back">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Time" />
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add Places Details"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/editTextStartTime"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Select Start Time"
-        android:clickable="true"
-        android:focusable="false"
-        android:padding="8dp"
-        android:background="@drawable/button_background_default" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="End Time" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Time" />
 
-    <TextView
-        android:id="@+id/editTextEndTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Select End Time"
-        android:clickable="true"
-        android:focusable="false"
-        android:padding="8dp"
-        android:background="@drawable/button_background_default" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            app:boxBackgroundMode="filled"
+            app:boxStrokeColor="@drawable/text_input_color_state">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Notes (Optional)" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextStartTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:focusable="false"
+                android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/editTextNotes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Add any notes here"
-        android:inputType="textMultiLine"
-        android:lines="4" />
 
-    <Button
-        android:id="@+id/buttonSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:layout_marginTop="16dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End Time" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            app:boxBackgroundMode="filled"
+            app:boxStrokeColor="@drawable/text_input_color_state">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextEndTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:focusable="false"
+                android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notes (Optional)" />
+
+        <EditText
+            android:id="@+id/editTextNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Add any notes here"
+            android:layout_marginBottom="16dp"
+            android:inputType="textMultiLine"
+            android:lines="4" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/custom_button_001"
+            android:text="Apply"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
 </LinearLayout>

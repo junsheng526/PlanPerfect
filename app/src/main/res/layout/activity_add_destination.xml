@@ -1,46 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.planning.AddDestinationActivity">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_arrow_back">
 
-        <!-- Search bar to filter places -->
-        <EditText
-            android:id="@+id/searchBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Search places"
-            android:padding="12dp"
-            android:background="@drawable/search_background" />
-
-        <!-- RecyclerView for displaying places -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/placesRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="8dp"
-            tools:listitem="@layout/add_tourist_item"
-            android:visibility="visible" />
-
-        <!-- Image when no results are found -->
-        <ImageView
-            android:id="@+id/noResultsImage"
+        <TextView
+            android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/result_not_found"
             android:layout_gravity="center"
-            android:visibility="gone" />
-    </LinearLayout>
+            android:text="Add Places"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </androidx.appcompat.widget.Toolbar>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-</ScrollView>
+            <!-- Search bar to filter places -->
+            <EditText
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Search places"
+                android:padding="12dp"
+                android:background="@drawable/search_background" />
+
+            <!-- RecyclerView for displaying places -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/placesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                tools:listitem="@layout/add_tourist_item"
+                android:visibility="visible" />
+
+            <!-- Image when no results are found -->
+            <ImageView
+                android:id="@+id/noResultsImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/result_not_found"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

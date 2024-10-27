@@ -2,6 +2,7 @@ package com.example.planperfect.view.planning
 
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -30,6 +31,7 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNewPlacesDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupToolbar()
 
         // Get the selected place and trip/day IDs from the Intent
         selectedPlace = intent.getParcelableExtra("place") ?: return
@@ -46,14 +48,14 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
 
         binding.editTextStartTime.setOnClickListener {
             showTimePicker { selectedTime, calendar ->
-                binding.editTextStartTime.text = selectedTime
+                binding.editTextStartTime.text = Editable.Factory.getInstance().newEditable(selectedTime)
                 startTimeCalendar = calendar
             }
         }
 
         binding.editTextEndTime.setOnClickListener {
             showTimePicker { selectedTime, calendar ->
-                binding.editTextEndTime.text = selectedTime
+                binding.editTextEndTime.text = Editable.Factory.getInstance().newEditable(selectedTime)
                 endTimeCalendar = calendar
             }
         }
@@ -72,6 +74,16 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
         }, hour, minute, false)
 
         timePickerDialog.show()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.toolbar.setNavigationOnClickListener {
+            this.onBackPressed()
+        }
     }
 
     private fun addPlaceToTrip(place: TouristPlace) {

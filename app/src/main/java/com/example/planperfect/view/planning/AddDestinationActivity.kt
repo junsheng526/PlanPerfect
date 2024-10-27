@@ -28,6 +28,7 @@ class AddDestinationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddDestinationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setupToolbar()
 
         // Get tripId and dayId from Intent
         tripId = intent.getStringExtra("tripId") ?: return
@@ -75,6 +76,16 @@ class AddDestinationActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding.toolbar.setNavigationOnClickListener {
+            this.onBackPressed()
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
