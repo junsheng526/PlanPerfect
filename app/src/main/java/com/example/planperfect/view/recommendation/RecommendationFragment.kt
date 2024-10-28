@@ -13,11 +13,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.planperfect.R
 import com.example.planperfect.data.api.ApiService
 import com.example.planperfect.data.model.CategoryRequest
 import com.example.planperfect.data.model.Recommendation
+import com.example.planperfect.data.model.User
 import com.example.planperfect.databinding.FragmentRecommendationBinding
+import com.example.planperfect.utils.toBitmap
+import com.example.planperfect.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,10 +35,7 @@ class RecommendationFragment : Fragment() {
     private lateinit var binding: FragmentRecommendationBinding
     private val selectedCategories = mutableListOf<String>()
     private lateinit var apiService: ApiService
-    private val allCategories = listOf(
-        "Eco-Tourism", "Nature Tourism", "Religious Tourism", "Adventure Tourism",
-        "Rural Tourism", "Gastronomic Tourism", "Beach Tourism", "Other"
-    )
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,8 +52,37 @@ class RecommendationFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         apiService = retrofit.create(ApiService::class.java)
-
+        loadUserData()
         return binding.root
+    }
+
+    private fun loadUserData() {
+        val userId = authViewModel.getCurrentUserId()
+
+        if (!userId.isNullOrBlank()) {
+            lifecycleScope.launch {
+                val user = authViewModel.get(userId) // Fetch user data from ViewModel
+                user?.let {
+                    populateUserData(it) // Populate the UI with user data
+                }
+            }
+        }
+    }
+
+    private fun populateUserData(user: User) {
+        binding.apply {
+            // Populate profile picture
+            if (user.photo.toBitmap() != null) {
+                headerProfile.setImageBitmap(user.photo.toBitmap())
+                binding.letterOverlayTv.visibility = View.GONE
+            } else {
+                headerProfile.setImageResource(R.drawable.profile_bg)
+                binding.letterOverlayTv.visibility = View.VISIBLE
+
+                val firstLetter = user.name.firstOrNull()?.toString()?.uppercase() ?: "U"
+                binding.letterOverlayTv.text = firstLetter
+            }
+        }
     }
 
     private fun setupCardViewListeners() {

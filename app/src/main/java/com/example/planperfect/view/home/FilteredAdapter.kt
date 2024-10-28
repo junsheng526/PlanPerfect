@@ -1,5 +1,6 @@
 package com.example.planperfect.view.home
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -7,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.ItemFilteredBinding
+import com.example.planperfect.view.planning.PlacesDetailsActivity
 
 class FilteredAdapter(
     private val items: List<TouristPlace>,
@@ -31,7 +33,13 @@ class FilteredAdapter(
 
             // Handle item click, if listener is provided
             binding.root.setOnClickListener {
-                onItemClicked?.invoke(item)
+                // navigate to PlacesDetailsActivity
+                val context = binding.root.context
+                val intent = Intent(context, PlacesDetailsActivity::class.java).apply {
+                    // Pass the selected TouristPlace to the details activity
+                    putExtra("place", item)
+                }
+                context.startActivity(intent)
             }
         }
     }

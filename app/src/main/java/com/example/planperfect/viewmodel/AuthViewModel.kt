@@ -27,6 +27,28 @@ class AuthViewModel : ViewModel() {
         return col.document(id).get().await().toObject<User>()
     }
 
+    suspend fun getCurrencyCodeByUserId(userId: String): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Fetch the user document based on the user ID
+                val userDocument = col.document(userId).get().await()
+
+                // Check if the document exists
+                if (userDocument.exists()) {
+                    // Retrieve the currency code from the document
+                    val currencyCode = userDocument.getString("currencyCode") // Adjust this key based on your Firestore structure
+                    return@withContext currencyCode
+                } else {
+                    Log.e("Firestore", "User document does not exist for ID: $userId")
+                    return@withContext null
+                }
+            } catch (e: Exception) {
+                Log.e("Firestore", "Error fetching currency code: $e")
+                null
+            }
+        }
+    }
+
     suspend fun getUserByEmail(email: String): User? {
         return withContext(Dispatchers.IO) {
             try {

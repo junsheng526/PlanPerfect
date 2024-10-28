@@ -174,6 +174,12 @@ class ProfileFragment : Fragment() {
             }
             axisLeft.apply {
                 setDrawGridLines(false)
+                valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                    override fun getAxisLabel(value: Float, axis: com.github.mikephil.charting.components.AxisBase?): String {
+                        return value.toInt().toString() // Format Y-axis labels as integers
+                    }
+                }
+                setLabelCount(totalTrips, true)
             }
             invalidate() // Refresh the chart
         }

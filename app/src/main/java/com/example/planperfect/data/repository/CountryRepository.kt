@@ -1,31 +1,29 @@
 package com.example.planperfect.data.repository
 
+import com.example.planperfect.data.api.CountryApiService
 import com.example.planperfect.data.api.RetrofitInstance
 import com.example.planperfect.data.model.Country
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CountryRepository {
+class CountryRepository(apiService: CountryApiService) {
 
     private val apiService = RetrofitInstance.countryApi
 
-    fun getAllCountries(
-        onSuccess: (List<String>) -> Unit,
-        onError: (Throwable) -> Unit
-    ) {
+    fun getAllCountries(callback: (List<Country>?) -> Unit) {
         apiService.getAllCountries().enqueue(object : Callback<List<Country>> {
             override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
                 if (response.isSuccessful) {
-                    val countries = response.body()?.map { it.name.common } ?: emptyList()
-                    onSuccess(countries)
+                    callback(response.body())
                 } else {
-                    onError(Throwable("Error fetching countries"))
+                    callback(null)
                 }
             }
 
             override fun onFailure(call: Call<List<Country>>, t: Throwable) {
-                onError(t)
+                println("Error: ${t.message}")
+                callback(null)
             }
         })
     }

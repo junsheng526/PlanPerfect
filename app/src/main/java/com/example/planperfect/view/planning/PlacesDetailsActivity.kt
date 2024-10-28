@@ -18,6 +18,7 @@ import com.example.planperfect.data.model.WeatherResponse
 import com.example.planperfect.databinding.ActivityPlacesDetailsBinding
 import com.example.planperfect.utils.FavoritesManager
 import com.example.planperfect.view.planning.adapter.ImageCarouselAdapter
+import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.PlacesViewModel
 import com.example.planperfect.viewmodel.ReviewViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,10 +35,14 @@ class PlacesDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPlacesDetailsBinding
     private val placesViewModel: PlacesViewModel by viewModels()
+    private val authViewModel: AuthViewModel by viewModels()
     private lateinit var touristPlaceId: String
+    private lateinit var touristPlaceName: String
     private lateinit var touristPlace: TouristPlace
     private lateinit var favoritesManager: FavoritesManager
     private val db = FirebaseFirestore.getInstance()
+    private var currency = ""
+    private var userId = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,17 +52,23 @@ class PlacesDetailsActivity : AppCompatActivity() {
         // Retrieve the TouristPlace ID from the intent
         touristPlace = intent.getParcelableExtra("place")!!
         touristPlaceId = touristPlace.id
+        touristPlaceName = touristPlace.name
 
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         favoritesManager = FavoritesManager(userId)
 
         setupToolbar()
         setupImageCarousel()
         setupDetails()
         setupMap()
+        getCurrency()
 
         // Fetch place details by ID
-        fetchPlaceDetails(touristPlaceId)
+        if(touristPlaceId == "" || touristPlaceId == null){
+            fetchPlaceDetails(touristPlaceId, touristPlaceName)
+        }else{
+            fetchPlaceDetails(touristPlaceId, null)
+        }
 
         binding.loveIcon.setOnClickListener {
             toggleFavorite()
@@ -68,6 +79,17 @@ class PlacesDetailsActivity : AppCompatActivity() {
                 putExtra("placeId", touristPlaceId)  // Pass the placeId here
             }
             startActivity(intent)
+        }
+    }
+
+    private fun getCurrency(){
+        lifecycleScope.launch {
+            val currencyCode = authViewModel.getCurrencyCodeByUserId(userId)
+            currencyCode?.let {
+                // Use the currency code as needed
+                currency = it
+                Log.i("CurrencyCode", "Currency Code for User: $it")
+            } ?: Log.e("CurrencyCode", "No currency code found.")
         }
     }
 
@@ -158,9 +180,14 @@ class PlacesDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchPlaceDetails(placeId: String) {
+    private fun fetchPlaceDetails(placeId: String, name: String?) {
         lifecycleScope.launch {
-            val place = placesViewModel.getPlaceById(placeId) // Fetch the place details
+            var place: TouristPlace? = null
+            if(placeId != ""){
+                place = placesViewModel.getPlaceById(placeId)
+            }else{
+                place = name?.let { placesViewModel.getPlaceByName(it) }
+            }
             if (place != null) {
                 touristPlace = place
                 // Get the favorite status from Firestore and update the local TouristPlace object
@@ -202,7 +229,9 @@ class PlacesDetailsActivity : AppCompatActivity() {
         val lat = touristPlace.latitude ?: 0.0
         val lon = touristPlace.longitude ?: 0.0
         val location = "$lat,$lon"
-        val currencyCode = touristPlace.currencyCode
+
+        val placeCurrencyCode = touristPlace.currencyCode // Assuming touristPlace has a currencyCode field
+        val userCurrencyCode = currency
 
         // Fetch Weather
         lifecycleScope.launch {
@@ -219,31 +248,26 @@ class PlacesDetailsActivity : AppCompatActivity() {
                 ).show()
             }
 
-            Log.d("currencyCode", currencyCode!!)
+            Log.d("CurrencyCode", "User Currency Code: $userCurrencyCode, Place Currency Code: $placeCurrencyCode")
 
-            if (currencyCode != null) {
-                fetchCurrencyFromApi(currencyCode)
-            } else {
-                Toast.makeText(
-                    this@PlacesDetailsActivity,
-                    "Currency code not available",
-                    Toast.LENGTH_SHORT
-                ).show()
+            // Call fetchCurrencyFromApi with both currency codes
+            if (placeCurrencyCode != null) {
+                fetchCurrencyFromApi(userCurrencyCode, placeCurrencyCode)
             }
         }
     }
 
-    private suspend fun fetchCurrencyFromApi(currencyCode: String) {
+    private suspend fun fetchCurrencyFromApi(userCurrencyCode: String, placeCurrencyCode: String) {
         val apiKey = "7f08c78040b9238328364018"
         try {
-            // Make the API call using the currency service
-            val currencyResponse = CurrencyApi.retrofitService.getExchangeRates(apiKey)
+            // Use the user currency code to fetch exchange rates
+            val currencyResponse = CurrencyApi.retrofitService.getExchangeRates(apiKey, userCurrencyCode)
 
             // Log the entire response for debugging
             Log.d("CurrencyResponse", currencyResponse.toString())
 
             // Update the UI with the retrieved currency data
-            updateCurrencyUI(currencyResponse, currencyCode)
+            updateCurrencyUI(currencyResponse, userCurrencyCode, placeCurrencyCode)
         } catch (e: HttpException) {
             Log.e("APIError", "HTTP error: ${e.code()} - ${e.message()}")
             Toast.makeText(
@@ -266,9 +290,16 @@ class PlacesDetailsActivity : AppCompatActivity() {
         binding.weather.text = "Current weather = $temperature°C"
     }
 
-    private fun updateCurrencyUI(currencyResponse: CurrencyResponse, currencyCode: String) {
-        val rate = currencyResponse.conversion_rates[currencyCode] ?: 1.0
-        binding.currency.text = "1 USD = $rate ${touristPlace.currencyCode}"
+    private fun updateCurrencyUI(currencyResponse: CurrencyResponse, userCurrencyCode: String, placeCurrencyCode: String) {
+        // Get the exchange rates
+        val userRate = currencyResponse.conversion_rates[userCurrencyCode] ?: 1.0
+        val placeRate = currencyResponse.conversion_rates[placeCurrencyCode] ?: 1.0
+
+        // Calculate the exchange rate from user currency to place currency
+        val exchangeRate = userRate / placeRate
+
+        // Update the UI
+        binding.currency.text = "1 $userCurrencyCode = ${String.format("%.4f", exchangeRate)} $placeCurrencyCode"
     }
 
     private fun fetchReviews() {

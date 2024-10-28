@@ -116,6 +116,22 @@ class PlacesViewModel : ViewModel() {
         }
     }
 
+    suspend fun getPlaceByName(name: String): TouristPlace? {
+        return withContext(Dispatchers.IO) {
+            try {
+                // Fetching documents where name matches the given name
+                val querySnapshot = placesCollection.whereEqualTo("name", name).get().await()
+
+                // Convert the first matching document to TouristPlace
+                val places = querySnapshot.toObjects<TouristPlace>()
+                places.firstOrNull() // Return the first place found, or null if no matches
+            } catch (e: Exception) {
+                Log.e("Firestore", "Error fetching places by name: $e")
+                null // Return null if an error occurs
+            }
+        }
+    }
+
     // Fetch specific place by ID (optional)
     suspend fun getPlaceById(id: String): TouristPlace? {
         return try {

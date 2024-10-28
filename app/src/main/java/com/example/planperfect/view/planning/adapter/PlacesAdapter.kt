@@ -1,6 +1,7 @@
 package com.example.planperfect.view.planning.adapter
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.PlaceItemLayoutBinding // Import the binding class
+import com.example.planperfect.view.planning.PlacesDetailsActivity
 import com.example.planperfect.view.planning.TripDetailsFragment
 import com.example.planperfect.viewmodel.TripViewModel
 import kotlinx.coroutines.launch
@@ -78,7 +80,13 @@ class PlacesAdapter(
         }
 
         holder.binding.cardButton.setOnClickListener {
-            // TODO: Handle view details navigation
+                // navigate to PlacesDetailsActivity
+                val context = holder.binding.root.context
+                val intent = Intent(context, PlacesDetailsActivity::class.java).apply {
+                    // Pass the selected TouristPlace to the details activity
+                    putExtra("place", place)
+                }
+                context.startActivity(intent)
         }
     }
 

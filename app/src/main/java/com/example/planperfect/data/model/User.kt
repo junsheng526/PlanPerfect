@@ -12,5 +12,6 @@ data class User(
     var phoneNumber: String = "",
     var dateOfBirth: Date? = null,
     var country: String = "",
+    val currencyCode: String? = "",
     var photo: Blob = Blob.fromBytes(ByteArray(0)),
 )

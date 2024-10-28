@@ -3,12 +3,9 @@ package com.example.planperfect.view.authentication
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
-import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
@@ -19,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.DatePicker
@@ -26,17 +24,23 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.planperfect.R
+import com.example.planperfect.data.api.CountryApiService
 import com.example.planperfect.databinding.FragmentRegisterBinding
 import com.example.planperfect.data.model.User
+import com.example.planperfect.data.repository.CountryRepository
+import com.example.planperfect.view.home.CountryViewModelFactory
 import com.example.planperfect.viewmodel.AuthViewModel
 import com.example.planperfect.viewmodel.CountryViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -48,7 +52,9 @@ class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
     private val nav by lazy { findNavController() }
     private val authVm: AuthViewModel by activityViewModels()
-    private val countryVm: CountryViewModel by activityViewModels()
+    private lateinit var countryVm: CountryViewModel
+    private val countryMap = mutableMapOf<String, String>()
+    private var selectedCurrencyCode: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +64,30 @@ class RegisterFragment : Fragment() {
 
         auth = Firebase.auth
         setupTermsAndPrivacyText()
+        val apiService = Retrofit.Builder()
+            .baseUrl("https://restcountries.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(CountryApiService::class.java)
+
+        // Create repository and ViewModelFactory
+        val repository = CountryRepository(apiService)
+        val factory = CountryViewModelFactory(repository)
+
+        // Obtain the ViewModel with the custom factory
+        countryVm = ViewModelProvider(this, factory).get(CountryViewModel::class.java)
         setupObservers()
-        countryVm.fetchCountries()
+        binding.spinnerCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedCountry = parent.getItemAtPosition(position).toString()
+                selectedCurrencyCode = countryMap[selectedCountry]
+                selectedCurrencyCode?.let { Log.d("selectedCurrencyCode", it) }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Optionally handle the case where no item is selected
+            }
+        }
 
         binding.editTextDOB.setOnClickListener {
             showDatePickerDialog()
@@ -87,16 +115,28 @@ class RegisterFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // Observe the list of countries
         countryVm.countries.observe(viewLifecycleOwner) { countries ->
-            val sortedCountries = countries.sorted()
-            setupCountrySpinner(sortedCountries)
+            val countryNames = mutableListOf<String>()
+
+            countries?.forEach { country ->
+                country.name.common?.let { countryName ->
+                    country.currencies?.forEach { (currencyCode, currency) ->
+                        countryNames.add(countryName)
+                        countryMap[countryName] = currencyCode // Map country to currency code
+                    }
+                }
+            }
+
+            // Sort country names alphabetically
+            val sortedCountryNames = countryNames.sorted()
+
+            setupCountrySpinner(sortedCountryNames) // Populate spinner with sorted country names
         }
 
-        countryVm.error.observe(viewLifecycleOwner) { error ->
-            // Handle error, e.g., show a toast or an error message
-        }
+        // Fetch countries data
+        countryVm.fetchCountries()
     }
-
     private fun setupCountrySpinner(countries: List<String>) {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, countries)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -138,6 +178,7 @@ class RegisterFragment : Fragment() {
             email = email,
             phoneNumber = phoneNumber,
             country = country,
+            currencyCode = selectedCurrencyCode ?: "",
             dateOfBirth = parseDate(dob)
         )
 

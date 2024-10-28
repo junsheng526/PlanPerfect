@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
         loadUserData()
 
         // Set up RecyclerView with TouristAdapter (Horizontal Carousel)
-        touristAdapter = TouristAdapter(touristList)
+        touristAdapter = TouristAdapter(emptyList())
         binding.recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.adapter = touristAdapter
 
@@ -68,6 +68,7 @@ class HomeFragment : Fragment() {
 
         // Observe the placesLiveData and update UI when data changes
         placesViewModel.placesLiveData.observe(viewLifecycleOwner) { places ->
+            touristAdapter.updateData(places)
             // Only update the filtered list if there's an active search query
             if (searchQuery.isNotEmpty()) {
                 filterList(searchQuery)
