@@ -8,11 +8,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.ActivityAddNewPlacesDetailsBinding
+import com.example.planperfect.viewmodel.TripViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -26,23 +30,24 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
 
     private var startTimeCalendar: Calendar? = null
     private var endTimeCalendar: Calendar? = null
+    private lateinit var viewModel: TripViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNewPlacesDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupToolbar()
+        viewModel = ViewModelProvider(this).get(TripViewModel::class.java)
 
         // Get the selected place and trip/day IDs from the Intent
         selectedPlace = intent.getParcelableExtra("place") ?: return
         tripId = intent.getStringExtra("tripId") ?: return
         dayId = intent.getStringExtra("dayId") ?: return
 
-        // Set up UI with selected place details...
-
         binding.buttonSave.setOnClickListener {
             if (validateTimes()) {
-                addPlaceToTrip(selectedPlace)
+                checkForOverlapAndAddPlace()
             }
         }
 
@@ -57,6 +62,27 @@ class AddNewPlacesDetailsActivity : AppCompatActivity() {
             showTimePicker { selectedTime, calendar ->
                 binding.editTextEndTime.text = Editable.Factory.getInstance().newEditable(selectedTime)
                 endTimeCalendar = calendar
+            }
+        }
+    }
+
+    private fun checkForOverlapAndAddPlace() {
+        val startTime = binding.editTextStartTime.text.toString().trim()
+        val endTime = binding.editTextEndTime.text.toString().trim()
+
+        Log.d("checkForOverlapAndAddPlace startTime ->", startTime)
+        Log.d("checkForOverlapAndAddPlace endTime ->", endTime)
+        Log.d("startTimeCalendar startTime ->", startTimeCalendar.toString())
+        Log.d("endTimeCalendar endTime ->", endTimeCalendar.toString())
+
+        // Launch coroutine to check for overlap
+        lifecycleScope.launch {
+            val hasOverlap = viewModel.checkTimeOverlap(tripId, dayId, startTime, endTime)
+
+            if (hasOverlap) {
+                Toast.makeText(this@AddNewPlacesDetailsActivity, "Time overlap with existing place", Toast.LENGTH_SHORT).show()
+            } else {
+                addPlaceToTrip(selectedPlace) // No overlap, proceed with adding
             }
         }
     }

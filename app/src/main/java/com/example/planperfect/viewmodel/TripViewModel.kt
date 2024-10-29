@@ -9,6 +9,7 @@ import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.data.model.Trip
 import com.example.planperfect.data.model.TripStatistics
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
@@ -50,6 +51,55 @@ class TripViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    suspend fun checkTimeOverlap(tripId: String, dayId: String, newStartTime: String, newEndTime: String, excludePlaceId: String? = null): Boolean {
+        val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+
+        // Log incoming times
+        Log.d("checkTimeOverlap", "New start time: $newStartTime, New end time: $newEndTime")
+
+        // Validate new start and end times
+        if (newStartTime.isBlank() || newEndTime.isBlank()) {
+            Log.e("checkTimeOverlap", "Start or End time is empty.")
+            return false
+        }
+
+        val newStart = timeFormat.parse(newStartTime) ?: return false
+        val newEnd = timeFormat.parse(newEndTime) ?: return false
+
+        if (newStart.after(newEnd)) {
+            Log.e("checkTimeOverlap", "New start time is after end time.")
+            return false
+        }
+
+        try {
+            val places = getPlacesForDay(tripId, dayId)
+            for (place in places) {
+                Log.d("checkTimeOverlap", "Checking place: ${place.name}")
+
+                if (place.id == excludePlaceId) continue
+
+                if (place.startTime.isNullOrBlank() || place.endTime.isNullOrBlank()) {
+                    Log.e("checkTimeOverlap", "Existing place '${place.name}' has an empty start or end time.")
+                    continue // Skip places without valid start/end times
+                }
+
+                val existingStart = timeFormat.parse(place.startTime) ?: continue
+                val existingEnd = timeFormat.parse(place.endTime) ?: continue
+
+                if ((newStart.before(existingEnd) && newEnd.after(existingStart)) ||
+                    (newStart == existingStart && newEnd == existingEnd)
+                ) {
+                    Log.e("checkTimeOverlap", "Time overlap detected with place: ${place.name}")
+                    return true // Overlap found
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("checkTimeOverlap", "Error during overlap check: ${e.message}")
+        }
+
+        return false // No overlap detected
     }
 
     // Fetch a specific trip by its ID
@@ -96,7 +146,9 @@ class TripViewModel : ViewModel() {
                         name = placeMap["name"] as String,
                         category = placeMap["category"] as String,
                         latitude = placeMap["latitude"] as? Double,
-                        longitude = placeMap["longitude"] as? Double
+                        longitude = placeMap["longitude"] as? Double,
+                        startTime = placeMap["startTime"] as? String,
+                        endTime = placeMap["endTime"] as? String
                         // Map other fields as necessary
                     )
                 } ?: emptyList()
@@ -104,6 +156,72 @@ class TripViewModel : ViewModel() {
         } catch (e: Exception) {
             Log.e("Firestore", "Error fetching places for day: $e")
             emptyList()
+        }
+    }
+
+    suspend fun updatePlace(tripId: String, dayId: String, updatedPlace: TouristPlace, placePosition: Int): Boolean {
+        return try {
+            Log.d("updatePlace tripId ->", tripId)
+            Log.d("updatePlace dayId ->", dayId)
+            Log.d("updatePlace updatedPlace ->", updatedPlace.toString())
+
+            // Reference to the specific document inside the 'itineraries' collection
+            val documentRef = col.document(tripId)
+                .collection("itineraries")
+                .document(dayId)
+
+            // Get the current places list from Firestore
+            val snapshot = documentRef.get().await()
+            val placesList = snapshot.get("places") as? MutableList<HashMap<String, Any>> ?: mutableListOf()
+
+            Log.d("updatePlace placesList ->", placesList.toString())
+
+            // Check if the place position is valid
+            if (placePosition < 0 || placePosition >= placesList.size) {
+                Log.e("updatePlace", "Invalid place position")
+                return false
+            }
+
+            // Get the place to update using the position
+            val placeToUpdate = placesList[placePosition]
+            Log.d("placeToUpdate ->", placeToUpdate.toString())
+
+            // Update fields in the found place
+            placeToUpdate["startTime"] = updatedPlace.startTime ?: placeToUpdate["startTime"] as String
+            placeToUpdate["endTime"] = updatedPlace.endTime ?: placeToUpdate["endTime"] as String
+            placeToUpdate["notes"] = updatedPlace.notes ?: placeToUpdate["notes"] as String
+
+            placeToUpdate?.let {
+//                documentRef.update("places", FieldValue.arrayUnion(placeToUpdate)).await()
+                placesList.add(placeToUpdate)
+                placesList.remove(it)
+                // Update the document with the modified places list
+                documentRef.update("places", placesList).await()
+            }
+            true // Return true if the operation is successful
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error updating place: $e")
+            false
+        }
+    }
+
+    suspend fun updateSortedPlaces(tripId: String, dayId: String, places: List<TouristPlace>): Boolean {
+        return try {
+            Log.d("updatePlace tripId ->", tripId)
+            Log.d("updatePlace dayId ->", dayId)
+            Log.d("updatePlace places ->", places.toString())
+
+            // Reference to the specific document inside the 'itineraries' collection
+            val documentRef = col.document(tripId)
+                .collection("itineraries")
+                .document(dayId)
+
+            documentRef.update("places", places).await()
+
+            true // Return true if the operation is successful
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error updating place: $e")
+            false
         }
     }
 

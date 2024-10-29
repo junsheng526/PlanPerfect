@@ -251,17 +251,17 @@ class RegisterFragment : Fragment() {
         }
 
         // Validate Password
-//        if (password.isBlank()) {
-//            binding.tvPasswordErrorView.visibility = View.VISIBLE
-//            binding.tvPasswordError.text = "Invalid password, Please re-enter."
-//            isValid = false
-//        } else if (!passwordPattern.matches(password)) {
-//            binding.tvPasswordErrorView.visibility = View.VISIBLE
-//            binding.tvPasswordError.text = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one special character, and one number."
-//            isValid = false
-//        }else{
-//            binding.tvPasswordErrorView.visibility = View.GONE
-//        }
+        if (password.isBlank()) {
+            binding.tvPasswordErrorView.visibility = View.VISIBLE
+            binding.tvPasswordError.text = "Invalid password, Please re-enter."
+            isValid = false
+        } else if (!passwordPattern.matches(password)) {
+            binding.tvPasswordErrorView.visibility = View.VISIBLE
+            binding.tvPasswordError.text = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one special character, and one number."
+            isValid = false
+        }else{
+            binding.tvPasswordErrorView.visibility = View.GONE
+        }
 
         // Validate Confirm Password
         if (confirmPassword.isBlank()) {

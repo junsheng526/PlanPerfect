@@ -190,36 +190,84 @@ class TripDetailsFragment : Fragment() {
             .document(tripId)
             .collection("itineraries")
 
-        itineraryCollection.document(dayId).get().addOnSuccessListener { documentSnapshot ->
-            val placesList = documentSnapshot.get("places") as? List<HashMap<String, Any>> ?: emptyList()
-            val touristPlaces = placesList.map { placeMap ->
-                TouristPlace(
-                    name = placeMap["name"] as String,
-                    category = placeMap["category"] as String,
-                    startTime = placeMap["startTime"] as? String,
-                    endTime = placeMap["endTime"] as? String,
-                    notes = placeMap["notes"] as? String,
-                    imageUrls = placeMap["imageUrls"] as List<String>,
-                    description = placeMap["description"] as String,
-                    longDescription = placeMap["longDescription"] as? String,
-                    currencyCode = placeMap["currencyCode"] as? String,
-                )
+        itineraryCollection.document(dayId).addSnapshotListener { documentSnapshot, e ->
+            if (e != null) {
+                Toast.makeText(context, "Failed to fetch itinerary for Day $day", Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
             }
 
-            // Define the time format you're using (e.g., "HH:mm" for 24-hour time)
-            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+            documentSnapshot?.let {
+                // Extract the list of places from the Firestore document
+                val placesList = it.get("places") as? List<HashMap<String, Any>> ?: emptyList()
+                val touristPlaces = placesList.map { placeMap ->
+                    TouristPlace(
+                        id = placeMap["id"] as? String ?: "",
+                        name = placeMap["name"] as String,
+                        category = placeMap["category"] as String,
+                        startTime = placeMap["startTime"] as? String,
+                        endTime = placeMap["endTime"] as? String,
+                        notes = placeMap["notes"] as? String,
+                        imageUrls = placeMap["imageUrls"] as List<String>,
+                        description = placeMap["description"] as String,
+                        longDescription = placeMap["longDescription"] as? String,
+                        currencyCode = placeMap["currencyCode"] as? String,
+                        isFavorite = placeMap["isFavorite"] as? Boolean ?: false
+                    )
+                }
 
-            // Sort the list of places by start time and end time
-            val sortedPlaces = touristPlaces.sortedWith(compareBy(
-                { place -> place.startTime?.let { parseTime(it, timeFormat) } },
-                { place -> place.endTime?.let { parseTime(it, timeFormat) } }
-            ))
+                // Sort the list of places (if needed)
+                val sortedPlaces = touristPlaces.sortedWith(compareBy(
+                    { place -> place.startTime?.let { parseTime(it, SimpleDateFormat("hh:mm a", Locale.getDefault())) } },
+                    { place -> place.endTime?.let { parseTime(it, SimpleDateFormat("hh:mm a", Locale.getDefault())) } }
+                ))
 
-            // Update the RecyclerView adapter with the sorted places
-            placesAdapter.updatePlaces(sortedPlaces, currentUserRole)
-        }.addOnFailureListener {
-            Toast.makeText(context, "Failed to fetch itinerary for Day $day", Toast.LENGTH_SHORT).show()
+                // Update the RecyclerView adapter with the sorted places
+                placesAdapter.updatePlaces(sortedPlaces, currentUserRole)
+                lifecycleScope.launch {
+                    val isSuccess = tripViewModel.updateSortedPlaces(tripId, dayId, sortedPlaces)
+                    if(isSuccess){
+                        Toast.makeText(context, "SortedList Updated", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
+
+//        itineraryCollection.document(dayId).get().addOnSuccessListener { documentSnapshot ->
+//            val placesList = documentSnapshot.get("places") as? List<HashMap<String, Any>> ?: emptyList()
+//            val touristPlaces = placesList.map { placeMap ->
+//                TouristPlace(
+//                    name = placeMap["name"] as String,
+//                    category = placeMap["category"] as String,
+//                    startTime = placeMap["startTime"] as? String,
+//                    endTime = placeMap["endTime"] as? String,
+//                    notes = placeMap["notes"] as? String,
+//                    imageUrls = placeMap["imageUrls"] as List<String>,
+//                    description = placeMap["description"] as String,
+//                    longDescription = placeMap["longDescription"] as? String,
+//                    currencyCode = placeMap["currencyCode"] as? String,
+//                )
+//            }
+//
+//            // Define the time format you're using (e.g., "HH:mm" for 24-hour time)
+//            val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+//
+//            // Sort the list of places by start time and end time
+//            val sortedPlaces = touristPlaces.sortedWith(compareBy(
+//                { place -> place.startTime?.let { parseTime(it, timeFormat) } },
+//                { place -> place.endTime?.let { parseTime(it, timeFormat) } }
+//            ))
+//
+//            // Update the RecyclerView adapter with the sorted places
+//            placesAdapter.updatePlaces(sortedPlaces, currentUserRole)
+//            lifecycleScope.launch {
+//                val isSuccess = tripViewModel.updateSortedPlaces(tripId, dayId, sortedPlaces)
+//                if(isSuccess){
+//                    Toast.makeText(context, "SortedList Updated", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }.addOnFailureListener {
+//            Toast.makeText(context, "Failed to fetch itinerary for Day $day", Toast.LENGTH_SHORT).show()
+//        }
     }
 
     private fun parseTime(timeString: String, timeFormat: SimpleDateFormat): Date? {

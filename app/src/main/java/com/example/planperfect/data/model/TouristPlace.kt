@@ -62,6 +62,16 @@ data class TouristPlace(
         override fun newArray(size: Int): Array<TouristPlace?> = arrayOfNulls(size)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TouristPlace) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
     fun toMap(): Map<String, Any?> = mapOf(
         "name" to name,
         "description" to description,

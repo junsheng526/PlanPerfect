@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.planperfect.R
 import com.example.planperfect.data.model.TouristPlace
 import com.example.planperfect.databinding.PlaceItemLayoutBinding // Import the binding class
+import com.example.planperfect.view.planning.EditItineraryDetailsActivity
 import com.example.planperfect.view.planning.PlacesDetailsActivity
 import com.example.planperfect.view.planning.TripDetailsFragment
 import com.example.planperfect.viewmodel.TripViewModel
@@ -76,7 +77,15 @@ class PlacesAdapter(
         }
 
         holder.binding.editButton.setOnClickListener {
-            // TODO: Handle edit navigation
+            val context = holder.binding.root.context
+            val intent = Intent(context, EditItineraryDetailsActivity::class.java).apply {
+                // Pass the selected TouristPlace and its position to the details activity
+                putExtra("place", place)
+                putExtra("tripId", tripId)
+                putExtra("dayId", dayId)
+                putExtra("placePosition", holder.bindingAdapterPosition) // Pass the position
+            }
+            context.startActivity(intent)
         }
 
         holder.binding.cardButton.setOnClickListener {
