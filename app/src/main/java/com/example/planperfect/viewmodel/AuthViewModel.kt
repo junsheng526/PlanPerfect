@@ -136,6 +136,10 @@ class AuthViewModel : ViewModel() {
                         updates["photo"] = user.photo
                     }
 
+                    if (user.currencyCode?.isNotEmpty() == true) {
+                        updates["currencyCode"] = user.currencyCode
+                    }
+
                     // Perform the update with only specified fields
                     documentRef.update(updates)
                         .addOnSuccessListener {

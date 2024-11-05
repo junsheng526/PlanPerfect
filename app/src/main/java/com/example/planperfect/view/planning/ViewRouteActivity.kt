@@ -100,6 +100,17 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
         lifecycleScope.launch {
             val places = tripViewModel.getPlacesForDay(tripId, dayId)
             if (places.isNotEmpty()) {
+
+                // Example: Set initial map location 5.4019667267772995, 100.28024961567152
+                val initialLocation =
+                    places[0].longitude?.let { places[0].latitude?.let { it1 -> LatLng(it1, it) } } // Default location
+                initialLocation?.let { CameraUpdateFactory.newLatLngZoom(it, 10f) }
+                    ?.let { mMap.moveCamera(it) }
+
+                for (place in places) {
+                    Log.d("ViewRouteActivity", "Place retrieved: Name=${place.name}, Latitude=${place.latitude}, Longitude=${place.longitude}")
+                }
+
                 drawRoutes(places)
                 addMarkers(places)
                 updateUIForOptimization(false) // Reset UI to original
@@ -121,8 +132,12 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     } // A > B > C =>>>>  A>B / B>C
 
     private fun drawRoute(startPlace: TouristPlace, endPlace: TouristPlace, isOptimized: Boolean) {
-        val start = "${startPlace.longitude},${startPlace.latitude}"
-        val end = "${endPlace.longitude},${endPlace.latitude}"
+//        val start = "${startPlace.longitude},${startPlace.latitude}"
+//        val end = "${endPlace.longitude},${endPlace.latitude}"
+        val start = "${"%.6f".format(startPlace.longitude)},${"%.6f".format(startPlace.latitude)}"
+        val end = "${"%.6f".format(endPlace.longitude)},${"%.6f".format(endPlace.latitude)}"
+
+        Log.d("ViewRouteActivity", "start=${start}, end=${end}")
 
         val call = openRouteServiceApi.getDirections(
             apiKey = "5b3ce3597851110001cf62484dce9b1de6da4acb9229465f7ca42db5",
@@ -218,8 +233,8 @@ class ViewRouteActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Example: Set initial map location
-        val initialLocation = LatLng(37.7749, -122.4194) // Default location
+        // Example: Set initial map location 5.4019667267772995, 100.28024961567152
+        val initialLocation = LatLng(3.137131439398031, 101.69728392052593) // Default location
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 10f))
     }
 

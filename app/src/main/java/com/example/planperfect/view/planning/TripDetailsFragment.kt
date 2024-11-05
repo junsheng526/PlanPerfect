@@ -146,8 +146,8 @@ class TripDetailsFragment : Fragment() {
             // Handle "View Route" button click
             if (selectedDayId.isNotEmpty()) {
                 val intent = Intent(context, ViewRouteActivity::class.java).apply {
-                    putExtra("tripId", tripId)           // Pass the tripId
-                    putExtra("dayId", selectedDayId)     // Pass the selected dayId
+                    putExtra("tripId", tripId)
+                    putExtra("dayId", selectedDayId)
                 }
                 startActivity(intent)
             } else {
@@ -211,7 +211,9 @@ class TripDetailsFragment : Fragment() {
                         description = placeMap["description"] as String,
                         longDescription = placeMap["longDescription"] as? String,
                         currencyCode = placeMap["currencyCode"] as? String,
-                        isFavorite = placeMap["isFavorite"] as? Boolean ?: false
+                        isFavorite = placeMap["isFavorite"] as? Boolean ?: false,
+                        latitude = placeMap["latitude"] as? Double,
+                        longitude = placeMap["longitude"] as? Double,
                     )
                 }
 

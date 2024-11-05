@@ -4,6 +4,9 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -149,6 +152,18 @@ class EditProfileActivity : AppCompatActivity() {
         val countryAdapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mutableListOf())
         countryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCountry.adapter = countryAdapter
+
+        binding.spinnerCountry.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedCountry = parent?.getItemAtPosition(position) as String
+                selectedCurrencyCode = countryMap[selectedCountry] ?: ""
+                Log.d("EditProfileActivity", "Selected Country: $selectedCountry, Currency Code: $selectedCurrencyCode")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Optionally handle no selection scenario
+            }
+        })
     }
 
     private fun setupObservers(country: String) {
@@ -160,18 +175,17 @@ class EditProfileActivity : AppCompatActivity() {
                     countryMap[countryName] = country.currencies?.keys?.firstOrNull() ?: ""
                 }
             }
+            Log.d("EditProfileActivity", "Country Map: $countryMap")  // Debug log
+
             countryNames.sort()
 
             val countryAdapter = binding.spinnerCountry.adapter as ArrayAdapter<String>
             countryAdapter.clear()
             countryAdapter.addAll(countryNames)
 
-            // Once the adapter is populated, set the selected country
-            country?.let {
-                val countryIndex = countryAdapter.getPosition(country)
-                if (countryIndex >= 0) {
-                    binding.spinnerCountry.setSelection(countryIndex)
-                }
+            val countryIndex = countryAdapter.getPosition(country)
+            if (countryIndex >= 0) {
+                binding.spinnerCountry.setSelection(countryIndex)
             }
         }
         countryVm.fetchCountries()
