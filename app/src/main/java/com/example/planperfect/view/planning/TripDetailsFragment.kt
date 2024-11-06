@@ -227,9 +227,6 @@ class TripDetailsFragment : Fragment() {
                 placesAdapter.updatePlaces(sortedPlaces, currentUserRole)
                 lifecycleScope.launch {
                     val isSuccess = tripViewModel.updateSortedPlaces(tripId, dayId, sortedPlaces)
-                    if(isSuccess){
-                        Toast.makeText(context, "SortedList Updated", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
         }
