@@ -298,8 +298,9 @@ class PlacesDetailsActivity : AppCompatActivity() {
         // Calculate the exchange rate from user currency to place currency
         val exchangeRate = userRate / placeRate
 
+        // Add a new comment on here
         // Update the UI
-        binding.currency.text = "1 $userCurrencyCode = ${String.format("%.4f", exchangeRate)} $placeCurrencyCode"
+        binding.currency.text = "1 $placeCurrencyCode = ${String.format("%.4f", exchangeRate)} $userCurrencyCode"
     }
 
     private fun fetchReviews() {
