@@ -65,7 +65,7 @@ data class TouristPlace(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TouristPlace) return false
-        return id == other.id
+        return name == other.name && latitude == other.latitude && longitude == other.longitude
     }
 
     override fun hashCode(): Int {

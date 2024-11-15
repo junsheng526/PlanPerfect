@@ -2,6 +2,7 @@ package com.example.planperfect.view.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,13 +88,9 @@ class StatisticsFragment : Fragment() {
             }
         })
 
-        binding.placesBtn.setOnClickListener {
-            val intent = Intent(requireContext(), AllPlacesVisitedActivity::class.java)
-            startActivity(intent)
-        }
-
         collaboratorViewModel.visitedPlacesLiveData.observe(viewLifecycleOwner) { placesList ->
             binding.placesBtn.setOnClickListener {
+                Log.d("StatisticFragment placesList-> ", placesList.toString())
                 if (placesList != null && placesList.isNotEmpty()) {
                     val intent = Intent(requireContext(), AllPlacesVisitedActivity::class.java)
                     intent.putParcelableArrayListExtra("placesList", ArrayList(placesList))

@@ -1,6 +1,7 @@
 package com.example.planperfect.view.profile
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +29,7 @@ class AllPlacesVisitedActivity : AppCompatActivity() {
 
 //        val placesList: ArrayList<TouristPlace>? = intent.getParcelableArrayListExtra("placesList")
         val placesList = intent.getParcelableArrayListExtra<TouristPlace>("placesList")
+        Log.d("VisitedPlaceActivity placesList-> ", placesList.toString())
 //        val placesList = intent.getSerializableExtra("placesList") as? ArrayList<TouristPlace>
 
         // Set up the RecyclerView
