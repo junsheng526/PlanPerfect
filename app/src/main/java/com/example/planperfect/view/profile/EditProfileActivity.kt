@@ -69,8 +69,8 @@ class EditProfileActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(CountryApiService::class.java)
-        val repository = CountryRepository(apiService)
-        val factory = CountryViewModelFactory(repository)
+//        val repository = CountryRepository(apiService)
+        val factory = CountryViewModelFactory(this)
         countryVm = ViewModelProvider(this, factory).get(CountryViewModel::class.java)
 
         // Observe country data and set up spinner

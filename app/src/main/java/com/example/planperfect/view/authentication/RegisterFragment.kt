@@ -71,8 +71,8 @@ class RegisterFragment : Fragment() {
             .create(CountryApiService::class.java)
 
         // Create repository and ViewModelFactory
-        val repository = CountryRepository(apiService)
-        val factory = CountryViewModelFactory(repository)
+//        val repository = CountryRepository(apiService)
+        val factory = CountryViewModelFactory(requireContext())
 
         // Obtain the ViewModel with the custom factory
         countryVm = ViewModelProvider(this, factory).get(CountryViewModel::class.java)
